@@ -1,0 +1,8 @@
+[master]
+master01
+
+[worker]
+mysql01
+slave01
+slave02
+slave03

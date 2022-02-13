@@ -1,0 +1,11 @@
+---
+- hosts: all
+  tasks:
+  - name: Get the http_status
+    become: true
+    become_user: root
+    shell: "ls -lrt /etc/cni/net.d/"
+    register: command_output
+
+  - debug:
+      var: command_output.stdout_lines
