@@ -24,6 +24,7 @@
      register: joined_or_not
    - debug:
        msg: "{{ joined_or_not.stdout }}"
+
 - hosts: master
   remote_user: ansible
   become: yes

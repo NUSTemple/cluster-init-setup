@@ -15,7 +15,7 @@
     pod_network_manifest_file: "https://projectcalico.docs.tigera.io/manifests/calico.yaml"
   tasks:
    - name: Intilizing Kubernetes Cluster
-     command: kubeadm init --ignore-preflight-errors all --pod-network-cidr "{{ pod_network_cidr }}"  --apiserver-advertise-address "{{ k8s_master_ip }}"
+     command: kubeadm init --pod-network-cidr "{{ pod_network_cidr }}"  --apiserver-advertise-address "{{ k8s_master_ip }}"
      run_once: true
      delegate_to: "{{ k8s_master_ip }}"
    - pause: seconds=30
