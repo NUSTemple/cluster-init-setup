@@ -25,6 +25,7 @@
          - gnupg-agent
          - vim
          - software-properties-common
+         - nfs-common
        state: present
    - name: Add Docker’s official GPG key
      apt_key:
@@ -39,10 +40,11 @@
    - name: Install Docker Engine.
      apt: 
        name:
-         - docker-ce
-         - docker-ce-cli
+         - docker-ce=5:19.03.15~3-0~ubuntu-xenial
+         - docker-ce-cli=5:19.03.15~3-0~ubuntu-xenial
          - containerd.io
        state: present
+       force: true
    - name: Update Docker Daemon
      ansible.builtin.copy:
         src: /home/pengtan/Projects/ansible/cluster-init-setup/resources/docker/daemon.json
@@ -71,10 +73,11 @@
    - name: Installing Kubernetes Cluster Packages.
      apt: 
        name:
-         - kubeadm
-         - kubectl
-         - kubelet
+         - kubeadm=1.19.16-00
+         - kubectl=1.19.16-00
+         - kubelet=1.19.16-00
        state: present
+       force: true
    - name: Enable service kubelet, and enable persistently
      service: 
        name: kubelet

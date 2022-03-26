@@ -6,19 +6,13 @@
   become_user: root
   gather_facts: yes
   connection: ssh
-  vars_prompt:
-   - name: "pod_network_cidr"
-     prompt: "Enter the Pod Network CIDR, example: 192.168.100.0/24"
-     private: no
-   - name: "k8s_master_ip"
-     prompt: "Enter the Apiserver advertise address, example: 192.168.0.26"
-     private: no
-   - name: "pod_network_manifest_file"
-     prompt: "Enter the Pod network manifest file URL, Your choice could be flannel, weave or calico, etc."
-     private: no
-   - name: "rbac_manifest_file"
-     prompt: "Enter the RBAC manifest file URL"
-     private: no 
+  vars:
+    # the Pod Network CIDR, example: 192.168.100.0/24
+    pod_network_cidr: 10.244.0.0/16
+    # the Apiserver advertise address
+    k8s_master_ip: "192.168.50.200"
+    # the Pod network manifest file URL, Your choice could be flannel, weave or calico, etc.
+    pod_network_manifest_file: "https://projectcalico.docs.tigera.io/manifests/calico.yaml"
   tasks:
    - name: Intilizing Kubernetes Cluster
      command: kubeadm init --ignore-preflight-errors all --pod-network-cidr "{{ pod_network_cidr }}"  --apiserver-advertise-address "{{ k8s_master_ip }}"
@@ -61,7 +55,6 @@
      command: "{{ item }}"
      with_items: 
         - kubectl apply -f {{ pod_network_manifest_file }}
-        - kubectl apply -f {{ rbac_manifest_file }}
    - pause: seconds=30
    - name: Get the token for joining the nodes with Kuberentes master.
      shell: kubeadm token create  --print-join-command

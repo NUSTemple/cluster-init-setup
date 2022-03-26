@@ -1,0 +1,12 @@
+---
+- hosts: all
+  gather_facts: False
+  remote_user: pengtan
+  tasks:
+    - name: Deploy SSH Key
+      authorized_key:
+        user: pengtan
+        key: "{{ lookup('file', '/home/pengtan/.ssh/id_rsa.pub') }}"
+        state: present
+
+

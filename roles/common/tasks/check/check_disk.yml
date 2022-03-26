@@ -1,10 +1,10 @@
 ---
 - hosts: all
   tasks:
-  - name: Get the http_status
+  - name: Check the disk
     become: true
     become_user: root
-    shell: "ls -lrt /etc/cni/net.d/"
+    shell: "fdisk -l | grep -i 'Disk /dev/' "
     register: command_output
 
   - debug:

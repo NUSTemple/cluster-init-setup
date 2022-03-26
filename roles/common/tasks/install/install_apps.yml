@@ -11,5 +11,6 @@
          - htop
          - tree
          - vim
+         - nano
          - openjdk-8-jdk
          - neofetch

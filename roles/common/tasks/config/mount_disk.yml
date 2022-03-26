@@ -1,0 +1,50 @@
+---
+- hosts: mysql01
+  gather_facts: False
+  tasks:
+    - name: install packages
+      become: true
+      become_user: root
+      apt:
+        state: present
+        name:
+         - nfs-common
+         - nfs-kernel-server
+    - name: Create nfs folder
+      become: true
+      become_user: root
+      file:
+        path: /nfs
+        owner: pengtan
+        group: pengtan
+        mode: '777'
+        state: directory
+    - name: Mount disk
+      become: true
+      become_user: root
+      mount:
+        path: /nfs
+        src: UUID=89ad4940-0f61-4f0c-8424-4ccbd4a090cf
+        fstype: ext4
+        opts: defaults
+        state: mounted
+    - name: Ensure required entries are made to hosts file. 
+      become: true
+      become_user: root
+      lineinfile:
+        path: /etc/exports
+        state: present
+        line: "{{ item }}"
+      with_items:
+        - '/nfs  *(rw,no_root_squash,no_subtree_check,insecure)' 
+    - name: Restart nfs-kernel-server.service 
+      become: true
+      become_user: root
+      systemd:
+        daemon_reload: yes
+        state: started
+        name: nfs-kernel-server.service
+    - name: Re-export the share
+      become: true
+      become_user: root
+      command: exportfs -rav

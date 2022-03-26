@@ -1,5 +1,9 @@
 ---
 - hosts: all
+  gather_facts: False
+  become: yes
+  become_user: root
+  become_method: sudo
   tasks:
     - lineinfile:
         path: /etc/sudoers

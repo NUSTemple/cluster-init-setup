@@ -1,0 +1,15 @@
+---
+- hosts: all
+  gather_facts: False
+  tasks:
+  - name: Update the /etc/hosts file with node name
+    tags: etchostsupdate
+    become: yes
+    become_user: root
+    lineinfile:
+      path: "/etc/hosts"
+      regexp: '.*{{ item }}$'
+      line: "{{ hostvars[item].ansible_ssh_host }} {{item}}"
+      state: present
+    when: hostvars[item].ansible_ssh_host is defined
+    with_items: "{{ groups.all }}"
