@@ -39,4 +39,10 @@
        dest: /home/{{ ansible_user }}/.bashrc
        line: 'source <(kubectl completion bash)'
        insertafter: EOF
+
+- hosts: localhost       
+  tasks:
+   - name: Configure worker.
+     shell: |
+        kubectl label nodes --selector="kubernetes.io/hostname!=master01" "kubernetes.io/role=worker"
 ...

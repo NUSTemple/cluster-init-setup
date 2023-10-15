@@ -47,7 +47,7 @@
        force: true
    - name: Update Docker Daemon
      ansible.builtin.copy:
-        src: /home/pengtan/Projects/ansible/cluster-init-setup/resources/docker/daemon.json
+        src: /Users/pengtan/Projects/k8s/cluster-init-setup/resources/docker/daemon.json
         dest: /etc/docker/daemon.json
         owner: root
         group: root

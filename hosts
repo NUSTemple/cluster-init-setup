@@ -2,7 +2,7 @@
 master01 ansible_ssh_host=192.168.50.200
 
 [worker]
-mysql01 ansible_ssh_host=192.168.50.204
 slave01 ansible_ssh_host=192.168.50.201
 slave02 ansible_ssh_host=192.168.50.202
 slave03 ansible_ssh_host=192.168.50.203
+slave04 ansible_ssh_host=192.168.50.204
