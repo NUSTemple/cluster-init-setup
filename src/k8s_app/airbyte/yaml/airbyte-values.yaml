@@ -20,7 +20,7 @@ global:
     secretName: ""
     secretValue: ""
     host: "192.168.50.200"
-    port: "30240"
+    port: "30432"
   state:
     ## state.storage.type Determines which state storage will be utilized.  One of "MINIO", "S3" or "GCS"
     storage:
@@ -1285,12 +1285,12 @@ postgresql:
 ##
 externalDatabase:
   host: 192.168.50.200
-  user: testUser
-  password: "testPassword"
+  user: admin
+  password: "psltest"
   existingSecret: ""
   existingSecretPasswordKey: ""
   database: db-airbyte
-  port: 30240
+  port: 30432
   jdbcUrl: ""
 
 ## @section Logs parameters
