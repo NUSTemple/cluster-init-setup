@@ -9,7 +9,7 @@ global:
   ##  deploymentMode -- Deployment mode, whether or not render the default env vars and volumes in deployment spec
   deploymentMode: "oss"
   edition: "community"
-
+  storageClass: "nfs-csi"
   env_vars: {}
   ##  database [object] -- Object used to overrite database configuration(to use external DB)
   ##  database.secretName -- secret name where DB creds are stored
@@ -1251,7 +1251,7 @@ temporal:
 ##  postgresql.commonAnnotations.helm.sh/hook-weight The order in which the hooks are executed. If weight is lower, it has higher priority
 ##
 postgresql:
-  enabled: true
+  enabled: false
 
   ## image.repository Repository for airbyte-db statefulset
   image:
@@ -1311,7 +1311,9 @@ minio:
     rootUser: minio
     rootPassword: minio123
   storage:
+    storageClass: "nfs-csi"
     volumeClaimValue: 500Mi
+
 
 ## @section cron parameters
 

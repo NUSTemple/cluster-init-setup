@@ -1,17 +1,15 @@
 apiVersion: v1
-# Kind for service
 kind: Service
 metadata:
-  # Name your service
-  name: postgresdb
-  namespace: postgresql
+  name: postgres # Sets service name
+  namespace: pg
   labels:
-    app: postgresdb
+    app: postgres # Labels and Selectors
 spec:
-  # Choose how to expose your service
-  type: NodePort
+  type: NodePort # Sets service type
   ports:
-    # The port number to expose the service
-    - port: 5432
+    - port: 5432 # Sets port to run the postgres application
+      nodePort: 30432
+      name: tcp
   selector:
-    app: postgresdb
+    app: postgres 

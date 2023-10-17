@@ -1,0 +1,1 @@
+helm uninstall airbyte -n airbyte
