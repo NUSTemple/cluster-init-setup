@@ -1,0 +1,6 @@
+#!/bin/bash
+
+helm install \ 
+--values src/k8s_app/nginx/yaml/nginx-values.yaml \
+nginx oci://registry-1.docker.io/bitnamicharts/nginx \
+-n nginx

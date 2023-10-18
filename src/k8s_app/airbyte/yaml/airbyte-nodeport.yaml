@@ -10,10 +10,9 @@ metadata:
     app.kubernetes.io/version: 0.50.31
     helm.sh/chart: webapp-0.49.4
 spec:
-  type: NodePort # Sets service type
+  type: ClusterIP # Sets service type
   ports:
     - port: 80 # Sets port to run the postgres application
-      nodePort: 30080
       name: http
   selector:
     app.kubernetes.io/instance: airbyte
