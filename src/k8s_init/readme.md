@@ -13,7 +13,7 @@ This repo is to use
 
 
 # Pre-requist 
-1. Setup Ubuntu 18.04 LTS server version for all machines
+1. Setup Ubuntu 22.04 LTS server version for all machines
 2. Use `ssh-copy-id` to enable ssh connection
    ```bash
    ssh-copy-id pengtan@master01

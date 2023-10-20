@@ -1,5 +1,4 @@
 #!/bin/bash
 file=$1
 echo "Use $file to complete the task"
-cd ./scripts
-ansible-playbook -i ../hosts ../roles/common/tasks/k8s/$file*.yml -K
+ansible-playbook -i ./hosts src/k8s_init/ansible/cluster_setup/$file*.yml -K

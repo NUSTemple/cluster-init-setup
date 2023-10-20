@@ -1,0 +1,37 @@
+- name: Create local kube directory
+  hosts: localhost
+  tasks:
+   - name: Find HOME directory
+     ansible.builtin.shell:
+      cmd: echo $HOME
+     register: home
+     ignore_errors: true
+     changed_when: false
+
+   - name: Create local directory
+     ansible.builtin.file:
+      path: "{{ hostvars['localhost']['home']['stdout'] }}/.kube/"
+      state: directory
+      mode: "755"
+     delegate_to: localhost
+
+- name: Copy Kube Config from master to local
+  hosts: master
+  gather_facts: true
+  connection: ssh
+  remote_user: ansible
+  tasks:
+   - name: Print Home directory
+     ansible.builtin.debug:
+      var: hostvars['localhost']['home']['stdout']
+   - name: Copy /etc/kubernetes/admin.conf to user's home directory.
+     become_user: root
+     become_method: ansible.builtin.sudo
+     become: true
+     ansible.builtin.fetch:
+      src: /etc/kubernetes/admin.conf
+      dest: "{{ hostvars['localhost']['home']['stdout'] }}/.kube/config"
+      fail_on_missing: true
+      mode: "400"
+      force: true
+      flat: true
