@@ -1,0 +1,9 @@
+---
+- name: Setup NFS
+  hosts: worker
+  gather_facts: true
+  connection: ssh
+  remote_user: ansible
+  tasks:
+    - name: Print disk info
+    - 
