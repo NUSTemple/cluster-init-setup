@@ -2,22 +2,29 @@
 - name: Setup master node
   hosts: master
   remote_user: ansible
+  become_user: root
+  become_method: ansible.builtin.sudo
+  become: true
   gather_facts: true
   connection: ssh
   vars:
     # the Pod Network CIDR, example: 192.168.100.0/24
-    pod_network_cidr: 10.244.0.0/16
+    pod_network_cidr: 10.144.0.0/16
     # the Apiserver advertise address
-    k8s_master_ip: "master01"
+    k8s_master_ip: 192.168.50.200
     # the Pod network manifest file URL, Your choice could be flannel, weave or calico, etc.
-    pod_network_manifest_file: "https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"
+    pod_network_manifest_file: "https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml"
   tasks:
+    
     - name: Intilizing Kubernetes Cluster
-      become: true
-      become_method: ansible.builtin.sudo
-      become_user: root
       ansible.builtin.shell: |
-       kubeadm init --pod-network-cidr "{{ pod_network_cidr }}"
+       kubeadm init \
+       --pod-network-cidr "{{ pod_network_cidr }}" \
+       --apiserver-advertise-address="{{ k8s_master_ip }}" \
+       --control-plane-endpoint="{{ k8s_master_ip }}" \
+       --ignore-preflight-errors=NumCPU \
+       --skip-phases=addon/kube-proxy \
+       --kubernetes-version 1.27.3
       run_once: true
       delegate_to: "{{ k8s_master_ip }}"
     - name: Pause 30 seconds
@@ -32,9 +39,6 @@
         group: "{{ ansible_ssh_user }}"
         mode: "0755"
     - name: Copy /etc/kubernetes/admin.conf to user's home directory ~/.kube/config.
-      become_user: root
-      become_method: ansible.builtin.sudo
-      become: true
       ansible.builtin.copy:
         src: /etc/kubernetes/admin.conf
         dest: /home/{{ ansible_ssh_user }}/.kube/config
@@ -61,9 +65,6 @@
         seconds: 20
 
     - name: Get the token for joining the nodes with Kuberentes master.
-      become_user: root
-      become_method: ansible.builtin.sudo
-      become: true
       ansible.builtin.command:
         cmd: kubeadm token create  --print-join-command
       register: kubernetes_join_command

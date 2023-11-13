@@ -14,6 +14,11 @@
       state: directory
       mode: "755"
      delegate_to: localhost
+   
+   - name: Create local directory
+     ansible.builtin.file:
+      path: "{{ hostvars['localhost']['home']['stdout'] }}/.kube/config"
+      state: absent
 
 - name: Copy Kube Config from master to local
   hosts: master
@@ -29,7 +34,7 @@
      become_method: ansible.builtin.sudo
      become: true
      ansible.builtin.fetch:
-      src: /etc/kubernetes/admin.conf
+      src: "/home/{{ ansible_ssh_user }}/.kube/config"
       dest: "{{ hostvars['localhost']['home']['stdout'] }}/.kube/config"
       fail_on_missing: true
       mode: "400"

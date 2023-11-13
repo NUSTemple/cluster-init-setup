@@ -1,0 +1,89 @@
+---
+- name: Play for prepare node
+  hosts: all
+  remote_user: ansible
+  become: true
+  become_method: ansible.builtin.sudo
+  become_user: root
+  gather_facts: true
+  connection: ssh
+  tasks:
+    - name: Install apt-transport-https curl
+      ansible.builtin.apt:
+        name:
+          - apt-transport-https
+          - curl
+    - name: Add Docker official GPG key
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+    - name: Add Docker Repository
+      ansible.builtin.apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
+        state: present
+        filename: docker
+    - name: Install Docker Engine.
+      ansible.builtin.apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+    - name: Update Docker Daemon
+      ansible.builtin.copy:
+        src: /Users/pengtan/Projects/k8s/cluster-init-setup/resources/docker/daemon.json
+        dest: /etc/docker/daemon.json
+        owner: root
+        group: root
+        mode: "0644"
+    - name: Reload Service
+      ansible.builtin.systemd:
+        name: docker
+        state: reloaded
+        daemon_reload: true
+    - name: Enable service docker, and enable persistently
+      ansible.builtin.service:
+        name: docker
+        enabled: true
+    - name: Add the Kubernetes signing key to both nodes
+      ansible.builtin.apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+    - name: Add Kubernetes Repository
+      ansible.builtin.apt_repository:
+        repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+        filename: kubernetes
+    - name: Installing Kubernetes Cluster Packages.
+      ansible.builtin.apt:
+        name:
+          - kubeadm=1.27.6-00
+          - kubectl=1.27.6-00
+          - kubelet=1.27.6-00
+          - kubernetes-cni
+        state: present
+    - name: Make the Swap inactive
+      ansible.builtin.command: swapoff -a
+    - name: Remove Swap entry from /etc/fstab.
+      ansible.builtin.lineinfile:
+        dest: /etc/fstab
+        regexp: swap
+        state: absent
+    - name: Add module br_netfilter with modprobe
+      modprobe:
+        name: br_netfilter
+        state: present
+    - name: Fix net.bridge.bridge-nf-call-iptables issue (1/2)
+      ansible.builtin.copy:
+        content: |
+          net.bridge.bridge-nf-call-ip6tables = 1
+          net.bridge.bridge-nf-call-iptables = 1
+        dest: /etc/sysctl.d/k8s.conf
+      register: fix
+    - name: Fix net.bridge.bridge-nf-call-iptables issue (2/2)
+      ansible.builtin.command: sysctl --system
+      when: fix.changed
+    - name: Enable Kubelet service
+      ansible.builtin.service:
+        name: kubelet
+        enabled: true

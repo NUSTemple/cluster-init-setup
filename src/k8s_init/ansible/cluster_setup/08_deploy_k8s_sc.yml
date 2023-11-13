@@ -1,0 +1,46 @@
+- name: Setup NFS Mount
+  hosts: localhost
+  tasks:
+    - name: Add stable chart repo
+      kubernetes.core.helm_repository:
+        name: stable
+        repo_url: "https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts"
+
+    - name: Deploy csi-driver-nfs
+      kubernetes.core.helm:
+        name: csi-driver-nfs
+        chart_ref: csi-driver-nfs/csi-driver-nfs
+        chart_version: 4.4.0
+        release_namespace: kube-system
+
+    - name: Pause 10 seconds
+      ansible.builtin.pause:
+        seconds: 10
+
+    - name: Create a Service object from an inline definition
+      kubernetes.core.k8s:
+        validate_certs: false
+        state: present
+        definition:
+          apiVersion: storage.k8s.io/v1
+          kind: StorageClass
+          metadata:
+            name: nfs-csi
+          provisioner: nfs.csi.k8s.io
+          parameters:
+            server: 192.168.50.204
+            share: /k8s_nfs
+          reclaimPolicy: Delete
+          volumeBindingMode: Immediate
+          mountOptions:
+            - hard
+            - nfsvers=4.1
+
+    - name: Apply multiple patch operations to an existing Pod
+      kubernetes.core.k8s_json_patch:
+        kind: StorageClass
+        name: nfs-csi
+        patch:
+          - op: replace
+            path: /metadata/annotations/storageclass.kubernetes.io/is-default-class
+            value: true

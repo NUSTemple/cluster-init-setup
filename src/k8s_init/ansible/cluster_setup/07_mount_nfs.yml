@@ -1,0 +1,14 @@
+- name: Setup NFS Mount
+  hosts: localhost
+  become: true
+  become_user: root
+  become_method: ansible.builtin.sudo
+  tasks:
+    - name: Mount nfs to local folder
+      ansible.posix.mount:
+        src: mysql01:/k8s_nfs
+        path: "{{ lookup('env', 'HOME') + '/k8s_nfs' }}"
+        opts: rw,sync,hard,resvport
+        boot: true
+        state: mounted
+        fstype: nfs
