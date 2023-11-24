@@ -1,0 +1,16 @@
+[master]
+master01 ansible_host=192.168.50.200
+
+[workers]
+slave01  ansible_host=192.168.50.201
+slave02  ansible_host=192.168.50.202
+slave03  ansible_host=192.168.50.203
+
+[nfs]
+mysql01  ansible_host=192.168.50.204
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
+ansible_ssh_extra_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+ansible_ssh_private_key_file=/Users/pengtan/.ssh/id_rsa
+ansible_user=ansible

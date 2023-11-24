@@ -1,0 +1,17 @@
+- name: Setup Master Node for Control Plate
+  hosts: master
+  become: true
+  tasks:
+    - name: Copy config file to local.
+      ansible.builtin.fetch:
+        src: "/home/{{ ansible_ssh_user }}/.kube/config"
+        dest: "~/.kube/config"
+        fail_on_missing: true
+        mode: "400"
+        force: true
+        flat: true
+    - name: Configure worker label.
+      become: true
+      become_user: ansible
+      ansible.builtin.command: |
+        kubectl label nodes --selector='kubernetes.io/hostname!=master01' 'kubernetes.io/role=worker'

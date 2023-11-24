@@ -1,0 +1,12 @@
+- name: Setup postgresql
+  hosts: localhost
+  tasks:
+  - name: Deploy postgresql chart using values files on target
+    kubernetes.core.helm:
+      name: postgresql
+      chart_ref: oci://registry-1.docker.io/bitnamicharts/postgresql
+      release_namespace: postgresql
+      create_namespace: true
+      values_files:
+        - postgresql-values.yml
+      binary_path: /opt/homebrew/bin/helm

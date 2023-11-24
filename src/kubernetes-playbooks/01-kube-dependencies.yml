@@ -1,0 +1,181 @@
+- name: Check Node Dependencies
+  hosts: all
+  become: true
+  tasks:
+    - name: Check OS Distribution
+      ansible.builtin.fail:
+        msg: "OS should be Ubuntu 22.04, not {{ ansible_distribution }} {{ ansible_distribution_version }}"
+      when: ansible_distribution != 'Ubuntu' or ansible_distribution_version != '22.04'
+
+    - name: Update APT packages
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Reboot and wait for reboot to complete
+      ansible.builtin.reboot:
+
+    - name: Check any existing Swap
+      ansible.builtin.command: swapon -s
+      register: result
+      changed_when: false
+
+    - name: Disable SWAP (Kubeadm requirement)
+      ansible.builtin.shell: |
+        swapoff -a
+      changed_when: result.stdout | length > 0
+
+    - name: Disable SWAP in fstab (Kubeadm requirement)
+      ansible.builtin.replace:
+        path: /etc/fstab
+        regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+        replace: '# \1'
+
+    - name: Create an empty file for the Containerd module
+      ansible.builtin.copy:
+        content: ""
+        dest: /etc/modules-load.d/containerd.conf
+        force: false
+        mode: '644'
+
+    - name: Configure modules for Containerd
+      ansible.builtin.blockinfile:
+        path: /etc/modules-load.d/containerd.conf
+        block: |
+          overlay
+          br_netfilter
+
+    - name: Create an empty file for Kubernetes sysctl params
+      ansible.builtin.copy:
+        content: ""
+        dest: /etc/sysctl.d/99-kubernetes-cri.conf
+        force: false
+        mode: '644'
+
+    - name: Configure sysctl params for Kubernetes
+      ansible.builtin.lineinfile:
+        path: /etc/sysctl.d/99-kubernetes-cri.conf
+        line: "{{ item }}"
+      with_items:
+        - "net.bridge.bridge-nf-call-iptables  = 1"
+        - "net.ipv4.ip_forward                 = 1"
+        - "net.bridge.bridge-nf-call-ip6tables = 1"
+
+    - name: Apply sysctl params without reboot
+      ansible.builtin.command: sysctl --system
+      changed_when: false
+
+    - name: Install APT Transport HTTPS
+      ansible.builtin.apt:
+        name: apt-transport-https
+        state: present
+
+    - name: Add Docker apt-key
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker's APT repository
+      ansible.builtin.apt_repository:
+        repo: "deb https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: Add Kubernetes apt-key
+      ansible.builtin.apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+
+    - name: Add Kubernetes' APT repository
+      ansible.builtin.apt_repository:
+        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+        filename: "kubernetes"
+
+    - name: Install Containerd
+      ansible.builtin.apt:
+        name: containerd.io
+        state: present
+
+    - name: Create Containerd directory
+      ansible.builtin.file:
+        path: /etc/containerd
+        state: directory
+        mode: "0644"
+
+    - name: Add Containerd configuration
+      ansible.builtin.command: |
+        /usr/bin/containerd config default > /etc/containerd/config.toml
+      changed_when: false
+
+    - name: Configuring the systemd cgroup driver for Containerd
+      ansible.builtin.lineinfile:
+        path: /etc/containerd/config.toml
+        regexp: "            SystemdCgroup = false"
+        line: "            SystemdCgroup = true"
+
+    - name: Enable the Containerd service and start it
+      ansible.builtin.systemd:
+        name: containerd
+        state: restarted
+        enabled: true
+        daemon-reload: true
+
+    - name: Install Kubelet
+      ansible.builtin.apt:
+        name: kubelet=1.28.*
+        state: present
+        allow_change_held_packages: true
+        update_cache: true
+
+    - name: Install Kubeadm
+      ansible.builtin.apt:
+        name: kubeadm=1.28.*
+        allow_change_held_packages: true
+        state: present
+
+    - name: Enable the Kubelet service, and enable it persistently
+      ansible.builtin.service:
+        name: kubelet
+        enabled: true
+
+    - name: Load br_netfilter kernel module
+      community.general.modprobe:
+        name: br_netfilter
+        state: present
+
+    - name: Set bridge-nf-call-iptables
+      ansible.posix.sysctl:
+        name: net.bridge.bridge-nf-call-iptables
+        value: 1
+
+    - name: Set ip_forward
+      ansible.posix.sysctl:
+        name: net.ipv4.ip_forward
+        value: 1
+
+    - name: Check Kubelet args in Kubelet config
+      ansible.builtin.shell: |
+        grep "^Environment=\"KUBELET_EXTRA_ARGS=" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf || true
+      register: check_args
+      changed_when: false
+
+    - name: Add runtime args in Kubelet config
+      ansible.builtin.lineinfile:
+        dest: "/etc/systemd/system/kubelet.service.d/10-kubeadm.conf"
+        line: |
+          'Environment="KUBELET_EXTRA_ARGS= --runtime-cgroups=/system.slice/containerd.service \
+                        --container-runtime-endpoint=unix:///run/containerd/containerd.sock"'
+        insertafter: '\[Service\]'
+      when: check_args.stdout == ""
+
+    - name: Reboot and wait for reboot to complete
+      ansible.builtin.reboot:
+
+- name: Install kubectl in master node
+  hosts: master
+  become: true
+  tasks:
+    - name: Install Kubectl
+      ansible.builtin.apt:
+        name: kubectl=1.28.*
+        state: present
+        force: true # allow downgrades

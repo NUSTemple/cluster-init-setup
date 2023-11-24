@@ -1,0 +1,22 @@
+- name: Setup Master Node for Control Plate
+  hosts: localhost
+  tasks:
+  - name: Add nginx ingress controller repository
+    kubernetes.core.helm_repository:
+      name: ingress-nginx
+      repo_url: https://kubernetes.github.io/ingress-nginx
+  
+  - name: Deploy nginx chart using values files on target
+    kubernetes.core.helm:
+      name: ingress-nginx
+      chart_ref: ingress-nginx/ingress-nginx
+      release_namespace: ingress-nginx
+      create_namespace: true
+      values_files:
+        - nginx-values.yaml
+      binary_path: /opt/homebrew/bin/helm
+  
+  - name: Apply Ingress policy
+    kubernetes.core.k8s:
+      state: present
+      src: nginx-service.yml

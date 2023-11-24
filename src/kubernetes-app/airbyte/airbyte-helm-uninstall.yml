@@ -1,0 +1,18 @@
+- name: Helm install airbyte
+  hosts: localhost
+  tasks:
+  - name: Deploy airbyte chart using values files on target
+    kubernetes.core.helm:
+      name: airbyte
+      release_namespace: airbyte
+      binary_path: /opt/homebrew/bin/helm
+      release_state: absent
+      wait: true
+  
+  - name: Delete airbyte namespace
+    kubernetes.core.k8s:
+      name: airbyte
+      api_version: v1
+      kind: Namespace
+      state: absent
+      wait: true

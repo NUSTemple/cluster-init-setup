@@ -1,0 +1,22 @@
+- name: Helm install airbyte
+  hosts: localhost
+  tasks:
+  - name: Add airbyte repository
+    kubernetes.core.helm_repository:
+      name: airbyte
+      repo_url: https://airbytehq.github.io/helm-charts
+  
+  - name: Deploy airbyte chart using values files on target
+    kubernetes.core.helm:
+      name: airbyte
+      chart_ref: airbyte/airbyte
+      release_namespace: airbyte
+      values_files:
+        - airbyte-values.yaml
+      binary_path: /opt/homebrew/bin/helm
+      create_namespace: true
+  
+  - name: Apply Ingress policy for airbyte to the cluster.
+    kubernetes.core.k8s:
+      state: present
+      src: airbyte-ingress.yml
