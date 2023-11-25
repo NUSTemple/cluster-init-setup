@@ -2,20 +2,20 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-nginx
-  namespace: airbyte
+  namespace: prometheus
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
-  - host: airbyte.master01.test
+  - host: prometheus.master01.test
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: airbyte-airbyte-webapp-svc
+            name: node-exporter-prometheus-server
             port: 
               number: 80
 
@@ -24,19 +24,19 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-redirect
-  namespace: airbyte
+  namespace: prometheus
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: "https://airbyte.master01.test"
+    nginx.ingress.kubernetes.io/rewrite-target: "https://prometheus.master01.test"
 spec:
   ingressClassName: nginx
   rules:
   - host: master01.test
     http:
       paths:
-      - path: /airbyte
+      - path: /prometheus
         pathType: Prefix
         backend:
           service:
-            name: airbyte-airbyte-webapp-svc
+            name: node-exporter-prometheus-server
             port: 
               number: 80

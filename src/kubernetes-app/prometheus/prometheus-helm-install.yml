@@ -1,0 +1,17 @@
+- name: Setup prometheus
+  hosts: localhost
+  tasks:
+  - name: Deploy prometheus chart using values files on target
+    kubernetes.core.helm:
+      name: node-exporter
+      chart_ref: oci://registry-1.docker.io/bitnamicharts/prometheus
+      release_namespace: prometheus
+      create_namespace: true
+      values_files:
+        - prometheus-values.yaml
+      binary_path: /opt/homebrew/bin/helm
+
+  - name: Apply Ingress policy for prometheus to the cluster.
+    kubernetes.core.k8s:
+      state: present
+      src: prometheus-ingress.yml

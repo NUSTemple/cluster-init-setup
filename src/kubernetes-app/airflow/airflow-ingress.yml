@@ -2,41 +2,41 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-nginx
-  namespace: airbyte
+  namespace: airflow
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
-  - host: airbyte.master01.test
+  - host: airflow.master01.test
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: airbyte-airbyte-webapp-svc
+            name: airflow-webserver
             port: 
-              number: 80
+              number: 8080
 
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-redirect
-  namespace: airbyte
+  namespace: airflow
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: "https://airbyte.master01.test"
+    nginx.ingress.kubernetes.io/rewrite-target: "https://airflow.master01.test"
 spec:
   ingressClassName: nginx
   rules:
   - host: master01.test
     http:
       paths:
-      - path: /airbyte
+      - path: /airflow
         pathType: Prefix
         backend:
           service:
-            name: airbyte-airbyte-webapp-svc
+            name: airflow-webserver
             port: 
-              number: 80
+              number: 8080
