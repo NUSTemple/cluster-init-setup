@@ -1,0 +1,22 @@
+- name: Helm install superset
+  hosts: localhost
+  tasks:
+    - name: Add superset repository
+      kubernetes.core.helm_repository:
+        name: superset
+        repo_url: https://apache.github.io/superset
+
+    - name: Deploy superset chart using values files on target
+      kubernetes.core.helm:
+        name: superset
+        chart_ref: superset/superset
+        release_namespace: superset
+        values_files:
+          - superset-values.yml
+        binary_path: /opt/homebrew/bin/helm
+        create_namespace: true
+    
+    - name: Apply Ingress policy for superset to the cluster.
+      kubernetes.core.k8s:
+        state: present
+        src: superset-ingress.yml

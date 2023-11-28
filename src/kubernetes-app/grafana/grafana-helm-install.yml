@@ -1,18 +1,17 @@
 - name: Helm install grafana
   hosts: localhost
   tasks:
+    - name: Deploy grafana chart using values files on target
+      kubernetes.core.helm:
+        name: grafana
+        chart_ref: oci://registry-1.docker.io/bitnamicharts/grafana
+        release_namespace: grafana
+        values_files:
+          - grafana-values.yml
+        binary_path: /opt/homebrew/bin/helm
+        create_namespace: true
 
-  - name: Deploy grafana chart using values files on target
-    kubernetes.core.helm:
-      name: grafana
-      chart_ref: grafana/grafana
-      release_namespace: grafana
-      values_files:
-        - grafana-values.yml
-      binary_path: /opt/homebrew/bin/helm
-      create_namespace: true
-  
-  - name: Apply Ingress policy for airbyte to the cluster.
-    kubernetes.core.k8s:
-      state: present
-      src: grafana-ingress.yml
+    - name: Apply Ingress policy for airbyte to the cluster.
+      kubernetes.core.k8s:
+        state: present
+        src: grafana-ingress.yml

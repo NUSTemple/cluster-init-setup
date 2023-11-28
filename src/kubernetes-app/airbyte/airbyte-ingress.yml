@@ -5,10 +5,15 @@ metadata:
   namespace: airbyte
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: "/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=RapidSSL TLS RSA CA G1"
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - "*.learn-data.dev"
+    secretName: ingress-cert
   rules:
-  - host: airbyte.master01.test
+  - host: airbyte.learn-data.dev
     http:
       paths:
       - path: /
@@ -26,11 +31,18 @@ metadata:
   name: ingress-redirect
   namespace: airbyte
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: "https://airbyte.master01.test"
+    nginx.ingress.kubernetes.io/rewrite-target: "https://airbyte.learn-data.dev"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    cert-manager.io/cluster-issuer: "/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=RapidSSL TLS RSA CA G1"
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - "*.learn-data.dev"
+    secretName: ingress-cert
   rules:
-  - host: master01.test
+  - host: home.learn-data.dev
     http:
       paths:
       - path: /airbyte

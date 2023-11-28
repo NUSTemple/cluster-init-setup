@@ -5,10 +5,15 @@ metadata:
   namespace: airflow
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: "/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=RapidSSL TLS RSA CA G1"
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - "*.learn-data.dev"
+    secretName: ingress-cert
   rules:
-  - host: airflow.master01.test
+  - host: airflow.learn-data.dev
     http:
       paths:
       - path: /
@@ -26,11 +31,18 @@ metadata:
   name: ingress-redirect
   namespace: airflow
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: "https://airflow.master01.test"
+    nginx.ingress.kubernetes.io/rewrite-target: "https://airflow.learn-data.dev"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    cert-manager.io/cluster-issuer: "/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=RapidSSL TLS RSA CA G1"
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - "*.learn-data.dev"
+    secretName: ingress-cert
   rules:
-  - host: master01.test
+  - host: home.learn-data.dev
     http:
       paths:
       - path: /airflow
