@@ -1,22 +1,21 @@
 - name: Helm install airflow
   hosts: localhost
   tasks:
-  - name: Add airbyte repository
-    kubernetes.core.helm_repository:
-      name: apache-airflow
-      repo_url: https://airflow.apache.org
+    - name: Add airbyte repository
+      kubernetes.core.helm_repository:
+        name: apache-airflow
+        repo_url: https://airflow.apache.org
 
-  - name: Deploy airflow chart using values files on target
-    kubernetes.core.helm:
-      name: airflow
-      chart_ref: apache-airflow/airflow
-      release_namespace: airflow
-      values_files:
-        - airflow-values.yml
-      binary_path: /opt/homebrew/bin/helm
-      create_namespace: true
-  
-  - name: Apply Ingress policy for airbyte to the cluster.
-    kubernetes.core.k8s:
-      state: present
-      src: airflow-ingress.yml
+    - name: Deploy airflow chart using values files on target
+      kubernetes.core.helm:
+        name: airflow
+        chart_ref: apache-airflow/airflow
+        release_namespace: airflow
+        values_files:
+          - airflow-values.yml
+        binary_path: /opt/homebrew/bin/helm
+        create_namespace: true
+    - name: Apply Ingress policy for airbyte to the cluster.
+      kubernetes.core.k8s:
+        state: present
+        src: airflow-ingress.yml

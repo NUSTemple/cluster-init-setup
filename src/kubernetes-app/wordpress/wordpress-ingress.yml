@@ -2,10 +2,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-nginx
-  namespace: airflow
+  namespace: wordpress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     cert-manager.io/cluster-issuer: "/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=RapidSSL TLS RSA CA G1"
 spec:
   ingressClassName: nginx
@@ -14,24 +13,25 @@ spec:
     - "*.learn-data.dev"
     secretName: ingress-cert
   rules:
-  - host: airflow.learn-data.dev
+  - host: wordpress.learn-data.dev
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: airflow-webserver
+            name: wordpress
             port: 
-              number: 8080
+              number: 80
+
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-redirect
-  namespace: airflow
+  namespace: wordpress
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: "https://airflow.learn-data.dev"
+    nginx.ingress.kubernetes.io/rewrite-target: "https://wordpress.learn-data.dev"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     cert-manager.io/cluster-issuer: "/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=RapidSSL TLS RSA CA G1"
@@ -45,10 +45,10 @@ spec:
   - host: home.learn-data.dev
     http:
       paths:
-      - path: /airflow
+      - path: /wordpress
         pathType: Prefix
         backend:
           service:
-            name: airflow-webserver
+            name: wordpress
             port: 
-              number: 8080
+              number: 80

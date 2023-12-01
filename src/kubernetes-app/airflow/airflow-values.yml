@@ -37,7 +37,7 @@ nameOverride: ""
 #
 # Note:fernet-key,redis-password and broker-url secrets don't use this logic yet,
 # as this may break existing installations due to how they get installed via pre-install hook.
-useStandardNaming: false
+useStandardNaming: true
 
 # Max number of old replicasets to retain. Can be overridden by each deployment's revisionHistoryLimit
 revisionHistoryLimit: ~
@@ -157,25 +157,25 @@ ingress:
     host: ""
 
     # The hostnames or hosts configuration for the web Ingress
-    hosts: []
+    hosts:
     #   # The hostname for the web Ingress (can be templated)
-    # - name: ""
-    #   # configs for web Ingress TLS
-    #   tls:
-    #     # Enable TLS termination for the web Ingress
-    #     enabled: false
-    #     # the name of a pre-created Secret containing a TLS private key and certificate
-    #     secretName: ""
+    - name: "airflow.learn-data.dev"
+      # configs for web Ingress TLS
+      tls:
+        # Enable TLS termination for the web Ingress
+        enabled: true
+        # the name of a pre-created Secret containing a TLS private key and certificate
+        secretName: "ingress-cert"
 
     # The Ingress Class for the web Ingress (used only with Kubernetes v1.19 and above)
-    ingressClassName: ""
+    ingressClassName: "nginx"
 
     # configs for web Ingress TLS (Deprecated - renamed to `ingress.web.hosts[*].tls`)
     tls:
       # Enable TLS termination for the web Ingress
-      enabled: false
+      enabled: true
       # the name of a pre-created Secret containing a TLS private key and certificate
-      secretName: ""
+      secretName: "ingress-cert"
 
     # HTTP paths to add to the web Ingress before the default path
     precedingPaths: []
@@ -2350,7 +2350,7 @@ dags:
     # Annotations for dags PVC
     annotations: {}
     # Enable persistent volume for storing dags
-    enabled: false
+    enabled: true
     # Volume size for dags
     size: 1Gi
     # If using a custom storageClass, pass name here
@@ -2451,9 +2451,9 @@ dags:
 logs:
   persistence:
     # Enable persistent volume for storing logs
-    enabled: false
+    enabled: true
     # Volume size for logs
-    size: 100Gi
+    size: 10Gi
     # Annotations for the logs PVC
     annotations: {}
     # If using a custom storageClass, pass name here

@@ -1,0 +1,16 @@
+- name: Helm install wordpress
+  hosts: localhost
+  tasks:
+    - name: Deploy wordpress chart using values files on target
+      kubernetes.core.helm:
+        name: wordpress
+        chart_ref: oci://registry-1.docker.io/bitnamicharts/wordpress
+        release_namespace: wordpress
+        values_files:
+          - wordpress-values.yml
+        binary_path: /opt/homebrew/bin/helm
+        create_namespace: true
+    - name: Apply Ingress policy for wordpress to the cluster.
+      kubernetes.core.k8s:
+        state: present
+        src: wordpress-ingress.yml
