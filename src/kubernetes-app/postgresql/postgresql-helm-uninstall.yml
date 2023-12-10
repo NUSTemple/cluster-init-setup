@@ -1,17 +1,17 @@
-- name: Helm uninstall airbyte
+- name: Helm uninstall postgresql
   hosts: localhost
   tasks:
-    - name: Uninstall airbyte chart using values files on target
+    - name: Deploy postgresql chart using values files on target
       kubernetes.core.helm:
-        name: airbyte
-        release_namespace: airbyte
+        name: postgresql
+        release_namespace: postgresql
         binary_path: /opt/homebrew/bin/helm
         release_state: absent
         wait: true
 
-    - name: Delete airbyte namespace
+    - name: Delete postgresql namespace
       kubernetes.core.k8s:
-        name: airbyte
+        name: postgresql
         api_version: v1
         kind: Namespace
         state: absent

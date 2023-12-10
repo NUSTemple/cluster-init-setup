@@ -1,17 +1,17 @@
-- name: Helm uninstall airbyte
+- name: Helm uninstall grafana
   hosts: localhost
   tasks:
-    - name: Uninstall airbyte chart using values files on target
+    - name: Deploy grafana chart using values files on target
       kubernetes.core.helm:
-        name: airbyte
-        release_namespace: airbyte
+        name: grafana
+        release_namespace: grafana
         binary_path: /opt/homebrew/bin/helm
         release_state: absent
         wait: true
 
-    - name: Delete airbyte namespace
+    - name: Delete grafana namespace
       kubernetes.core.k8s:
-        name: airbyte
+        name: grafana
         api_version: v1
         kind: Namespace
         state: absent

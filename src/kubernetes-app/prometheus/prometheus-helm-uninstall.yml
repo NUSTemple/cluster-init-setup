@@ -1,17 +1,17 @@
-- name: Helm uninstall airbyte
+- name: Helm uninstall prometheus
   hosts: localhost
   tasks:
-    - name: Uninstall airbyte chart using values files on target
+    - name: Deploy prometheus chart using values files on target
       kubernetes.core.helm:
-        name: airbyte
-        release_namespace: airbyte
+        name: prometheus
+        release_namespace: prometheus
         binary_path: /opt/homebrew/bin/helm
         release_state: absent
         wait: true
 
-    - name: Delete airbyte namespace
+    - name: Delete prometheus namespace
       kubernetes.core.k8s:
-        name: airbyte
+        name: prometheus
         api_version: v1
         kind: Namespace
         state: absent
