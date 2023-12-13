@@ -131,7 +131,7 @@ extraVolumeMounts: []
 # -- A dictionary of overrides to append at the end of superset_config.py - the name does not matter
 # WARNING: the order is not guaranteed
 # Files can be passed as helm --set-file configOverrides.my-override=my-file.py
-configOverrides: {}
+configOverrides:
   # extend_timeout: |
   #    # Extend timeout to allow long running queries.
   #    SUPERSET_WEBSERVER_TIMEOUT = ...
@@ -163,9 +163,9 @@ configOverrides: {}
   #   AUTH_USER_REGISTRATION = True
   #   # The default user self registration role
   #   AUTH_USER_REGISTRATION_ROLE = "Admin"
-  # secret: |
-  #   # Generate your own secret key for encryption. Use openssl rand -base64 42 to generate a good key
-  #   SECRET_KEY = 'YOUR_OWN_RANDOM_GENERATED_SECRET_KEY'
+  secret: |
+    # Generate your own secret key for encryption. Use openssl rand -base64 42 to generate a good key
+    SECRET_KEY = 'NW3nwjyz1vR4LG8z1wG2AZz0GP5UkLQ/lClFKan1/CkbMPlT5FAJbvlU'
 
 # -- Same as above but the values are files
 configOverridesFiles: {}
@@ -745,7 +745,7 @@ postgresql:
       enabled: true
       ##
       ## Persistent class
-      storageClass: nfs-csi
+      storageClass: rook-ceph-block
       ##
       ## Access modes:
       accessModes:
@@ -800,7 +800,7 @@ redis:
       enabled: true
       ##
       ## Persistent class
-      storageClass: nfs-csi
+      storageClass: rook-ceph-block
       ##
       ## Access mode:
       accessModes:

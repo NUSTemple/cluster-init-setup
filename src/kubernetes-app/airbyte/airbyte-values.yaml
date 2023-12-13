@@ -9,7 +9,7 @@ global:
   ##  deploymentMode -- Deployment mode, whether or not render the default env vars and volumes in deployment spec
   deploymentMode: "oss"
   edition: "community"
-  storageClass: "nfs-csi"
+  storageClass: "rook-ceph-block"
   env_vars: {}
   ##  database [object] -- Object used to overrite database configuration(to use external DB)
   ##  database.secretName -- secret name where DB creds are stored
@@ -530,7 +530,7 @@ server:
   ##  server.replicaCount Number of server replicas
   replicaCount: 1
   storage:
-    storageClass: "nfs-csi"
+    storageClass: "rook-ceph-block"
     size: "50Gi"
   ##  server.image.repository The repository to use for the airbyte server image.
   ##  server.image.pullPolicy the pull policy to use for the airbyte server image
@@ -1258,7 +1258,7 @@ postgresql:
     repository: airbyte/db
   persistence:
     enabled: true
-    storageClass: "nfs-csi"
+    storageClass: "rook-ceph-block"
     size: "10Gi"
   postgresqlUsername: airbyte
   postgresqlPassword: airbyte
@@ -1311,7 +1311,7 @@ minio:
     rootUser: minio
     rootPassword: minio123
   storage:
-    storageClass: "nfs-csi"
+    storageClass: "rook-ceph-block"
     volumeClaimValue: 500Mi
 
 

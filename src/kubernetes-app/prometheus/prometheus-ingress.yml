@@ -20,7 +20,17 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: node-exporter-prometheus-server
+            name: kube-prometheus-stack-prometheus
+            port: 
+              number: 9090
+  - host: grafana.learn-data.dev
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kube-prometheus-stack-grafana
             port: 
               number: 80
 
@@ -31,7 +41,7 @@ metadata:
   name: ingress-redirect
   namespace: prometheus
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: "https://prometheus.learn-data.dev"
+    nginx.ingress.kubernetes.io/rewrite-target: "https://grafana.learn-data.dev"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     cert-manager.io/cluster-issuer: "/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=RapidSSL TLS RSA CA G1"
@@ -45,10 +55,10 @@ spec:
   - host: home.learn-data.dev
     http:
       paths:
-      - path: /prometheus
+      - path: /grafana
         pathType: Prefix
         backend:
           service:
-            name: node-exporter-prometheus-server
+            name: kube-prometheus-stack-prometheus
             port: 
-              number: 80
+              number: 9090
