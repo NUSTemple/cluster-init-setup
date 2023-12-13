@@ -15,3 +15,4 @@
       become_user: ansible
       ansible.builtin.command: |
         kubectl label nodes --selector='kubernetes.io/hostname!=master01' 'kubernetes.io/role=worker'
+      changed_when: false
