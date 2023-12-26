@@ -23,9 +23,9 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: datahub-webserver
+            name: datahub-datahub-frontend
             port: 
-              number: 8080
+              number: 9002
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -51,6 +51,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: datahub-webserver
+            name: datahub-datahub-frontend
             port: 
               number: 9002

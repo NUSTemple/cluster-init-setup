@@ -20,8 +20,8 @@ datahub-gms:
     periodSeconds: 30
     failureThreshold: 8
   # Optionaly specify service type for datahub-gms: LoadBalancer, ClusterIP or NodePort, by default: LoadBalancer
-  # service:
-  #   type: ClusterIP
+  service:
+    type: ClusterIP
   # Optionally set a GMS specific SQL login (defaults to global login)
   # sql:
   #   datasource:
@@ -51,8 +51,8 @@ datahub-frontend:
     #   datahub:manualPassword
     #   initialViewer:manualPassword
   # Optionaly specify service type for datahub-frontend: LoadBalancer, ClusterIP or NodePort, by default: LoadBalancer
-  # service:
-  #   type: ClusterIP
+  service:
+    type: ClusterIP
 
 acryl-datahub-actions:
   enabled: true
@@ -243,10 +243,10 @@ datahubUpgrade:
   noCodeDataMigration:
     # sqlDbType: "MYSQL"
     sqlDbType: "POSTGRES"
-  podSecurityContext: {}
-    # fsGroup: 1000
-  securityContext: {}
-    # runAsUser: 1000
+  podSecurityContext:
+    fsGroup: 1000
+  securityContext:
+    runAsUser: 1000
   annotations:
     # This is what defines this resource as a hook. Without this line, the
     # job is considered part of the release.
@@ -290,9 +290,9 @@ datahubUpgrade:
       #   image: my-image
       #   imagePullPolicy: Always
     # Optionally set a specific PostgreSQL database name using extraEnvs
-    # extraEnvs:
-    #   - name: "DATAHUB_DB_NAME"
-    #    value: "dh"
+    extraEnvs:
+      - name: "DATAHUB_DB_NAME"
+        value: "datahub"
   extraInitContainers: []
 
 ## Runs system update processes
@@ -301,10 +301,10 @@ datahubSystemUpdate:
   image:
     repository: acryldata/datahub-upgrade
     # tag:
-  podSecurityContext: {}
-    # fsGroup: 1000
-  securityContext: {}
-    # runAsUser: 1000
+  podSecurityContext:
+    fsGroup: 1000
+  securityContext:
+    runAsUser: 1000
   annotations:
     # This is what defines this resource as a hook. Without this line, the
     # job is considered part of the release.

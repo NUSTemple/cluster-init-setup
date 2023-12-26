@@ -26,11 +26,6 @@
         binary_path: /opt/homebrew/bin/helm
         create_namespace: true
 
-    - name: Sleep for 120 seconds and continue with play
-      ansible.builtin.wait_for:
-        timeout: 120
-      delegate_to: localhost
-
     - name: Deploy datahub chart using values files on target
       kubernetes.core.helm:
         name: datahub
@@ -40,3 +35,11 @@
           - datahub-values.yml
         binary_path: /opt/homebrew/bin/helm
         create_namespace: true
+        timeout: "1h"
+        wait: true
+
+    - name: Apply Ingress policy for datahub to the cluster.
+      kubernetes.core.k8s:
+        state: present
+        src: datahub-ingress.yml
+
