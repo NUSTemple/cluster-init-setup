@@ -1,0 +1,56 @@
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-nginx
+  namespace: datahub
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    cert-manager.io/cluster-issuer: "/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=RapidSSL TLS RSA CA G1"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - "*.learn-data.dev"
+    secretName: ingress-cert
+  rules:
+  - host: datahub.learn-data.dev
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: datahub-webserver
+            port: 
+              number: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-redirect
+  namespace: datahub
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: "https://datahub.learn-data.dev"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    cert-manager.io/cluster-issuer: "/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=RapidSSL TLS RSA CA G1"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - "*.learn-data.dev"
+    secretName: ingress-cert
+  rules:
+  - host: home.learn-data.dev
+    http:
+      paths:
+      - path: /datahub
+        pathType: Prefix
+        backend:
+          service:
+            name: datahub-webserver
+            port: 
+              number: 9002

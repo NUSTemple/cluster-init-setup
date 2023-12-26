@@ -1,0 +1,42 @@
+- name: Helm install datahub
+  hosts: localhost
+  tasks:
+    - name: Create namespace for datahub
+      kubernetes.core.k8s:
+        name: datahub
+        api_version: v1
+        kind: Namespace
+        state: present
+    - name: Create secrets for mysql and neo4j
+      kubernetes.core.k8s:
+        state: present
+        src: datahub-secrets.yml
+    - name: Add datahub repository
+      kubernetes.core.helm_repository:
+        name: datahub
+        repo_url: https://helm.datahubproject.io/
+
+    - name: Deploy datahub-prerequisites chart using values files on target
+      kubernetes.core.helm:
+        name: prerequisites
+        chart_ref: datahub/datahub-prerequisites
+        release_namespace: datahub
+        values_files:
+          - datahub-prerequisites-values.yml
+        binary_path: /opt/homebrew/bin/helm
+        create_namespace: true
+
+    - name: Sleep for 120 seconds and continue with play
+      ansible.builtin.wait_for:
+        timeout: 120
+      delegate_to: localhost
+
+    - name: Deploy datahub chart using values files on target
+      kubernetes.core.helm:
+        name: datahub
+        chart_ref: datahub/datahub
+        release_namespace: datahub
+        values_files:
+          - datahub-values.yml
+        binary_path: /opt/homebrew/bin/helm
+        create_namespace: true
