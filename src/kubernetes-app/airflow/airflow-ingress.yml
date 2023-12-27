@@ -5,6 +5,7 @@ metadata:
   namespace: airflow
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     cert-manager.io/cluster-issuer: "/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=RapidSSL TLS RSA CA G1"
 spec:
@@ -24,6 +25,16 @@ spec:
             name: airflow-webserver
             port: 
               number: 8080
+  - host: dags.learn-data.dev
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: filebrowser
+            port: 
+              number: 80
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress

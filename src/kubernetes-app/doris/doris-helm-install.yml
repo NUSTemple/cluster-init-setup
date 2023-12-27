@@ -1,12 +1,12 @@
 - name: Kubectl install Doris Custom Resource Definition(CRD)
   hosts: localhost
   tasks:
-    - name: Apply Ingress policy for airbyte to the cluster.
+    - name: Deploy doris CRD
       kubernetes.core.k8s:
         state: present
         src: doris.selectdb.com_dorisclusters.yml
 
-    - name: Apply Ingress policy for airbyte to the cluster.
+    - name: Deploy doris operator
       kubernetes.core.k8s:
         state: present
         src: operator.yml

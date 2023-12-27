@@ -16,7 +16,7 @@ global:
   imagePullSecrets: []
   ## @param global.storageClass Global StorageClass for Persistent Volume(s)
   ##
-  storageClass: "rook-ceph-block"
+  storageClass: "longhorn"
   postgresql:
     ## @param global.postgresql.auth.postgresPassword Password for the "postgres" admin user (overrides `auth.postgresPassword`)
     ## @param global.postgresql.auth.username Name for a custom user to create (overrides `auth.username`)
@@ -676,7 +676,7 @@ primary:
     ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
     ##   GKE, AWS & OpenStack)
     ##
-    storageClass: ""
+    storageClass: "longhorn"
     ## @param primary.persistence.accessModes PVC Access Mode for PostgreSQL volume
     ##
     accessModes:
@@ -705,7 +705,7 @@ primary:
   persistentVolumeClaimRetentionPolicy:
     ## @param primary.persistentVolumeClaimRetentionPolicy.enabled Enable Persistent volume retention policy for Primary Statefulset
     ##
-    enabled: false
+    enabled: true
     ## @param primary.persistentVolumeClaimRetentionPolicy.whenScaled Volume retention behavior when the replica count of the StatefulSet is reduced
     ##
     whenScaled: Retain

@@ -157,25 +157,25 @@ ingress:
     host: ""
 
     # The hostnames or hosts configuration for the web Ingress
-    hosts:
+    hosts: []
     #   # The hostname for the web Ingress (can be templated)
-    - name: "airflow.learn-data.dev"
-      # configs for web Ingress TLS
-      tls:
-        # Enable TLS termination for the web Ingress
-        enabled: true
-        # the name of a pre-created Secret containing a TLS private key and certificate
-        secretName: "ingress-cert"
+    # - name: ""
+    #   # configs for web Ingress TLS
+    #   tls:
+    #     # Enable TLS termination for the web Ingress
+    #     enabled: false
+    #     # the name of a pre-created Secret containing a TLS private key and certificate
+    #     secretName: ""
 
     # The Ingress Class for the web Ingress (used only with Kubernetes v1.19 and above)
-    ingressClassName: "nginx"
+    ingressClassName: ""
 
     # configs for web Ingress TLS (Deprecated - renamed to `ingress.web.hosts[*].tls`)
     tls:
       # Enable TLS termination for the web Ingress
-      enabled: true
+      enabled: false
       # the name of a pre-created Secret containing a TLS private key and certificate
-      secretName: "ingress-cert"
+      secretName: ""
 
     # HTTP paths to add to the web Ingress before the default path
     precedingPaths: []
@@ -426,7 +426,7 @@ fernetKey: ~
 fernetKeySecretName: ~
 
 # Flask secret key for Airflow Webserver: `[webserver] secret_key` in airflow.cfg
-webserverSecretKey: ~
+webserverSecretKey: "airflow"
 webserverSecretKeySecretName: ~
 
 # In order to use kerberos you need to create secret containing the keytab file
@@ -596,9 +596,9 @@ workers:
     # Enable persistent volumes
     enabled: true
     # Volume size for worker StatefulSet
-    size: 10Gi
+    size: 30Gi
     # If using a custom storageClass, pass name ref to all statefulSets here
-    storageClassName: rook-ceph-block
+    storageClassName: longhorn
     # Execute init container to chown log directory.
     # This is currently only needed in kind, due to usage
     # of local-path provisioner.
@@ -1363,9 +1363,9 @@ triggerer:
     # Enable persistent volumes
     enabled: true
     # Volume size for triggerer StatefulSet
-    size: 100Gi
+    size: 20Gi
     # If using a custom storageClass, pass name ref to all statefulSets here
-    storageClassName: rook-ceph-block
+    storageClassName: longhorn
     # Execute init container to chown log directory.
     # This is currently only needed in kind, due to usage
     # of local-path provisioner.
@@ -1502,9 +1502,9 @@ triggerer:
 
 # Airflow Dag Processor Config
 dagProcessor:
-  enabled: false
+  enabled: true
   # Number of airflow dag processors in the deployment
-  replicas: 1
+  replicas: 2
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -2062,7 +2062,7 @@ redis:
     # Volume size for worker StatefulSet
     size: 1Gi
     # If using a custom storageClass, pass name ref to all statefulSets here
-    storageClassName: rook-ceph-block
+    storageClassName: longhorn
     # Annotations to add to redis volumes
     annotations: {}
 
@@ -2250,7 +2250,7 @@ config:
   core:
     dags_folder: '{{ include "airflow_dags" . }}'
     # This is ignored when used with the official Docker image
-    load_examples: 'False'
+    load_examples: 'True'
     executor: '{{ .Values.executor }}'
     # For Airflow 1.10, backward compatibility; moved to [logging] in 2.0
     colored_console_log: 'False'
@@ -2352,15 +2352,15 @@ dags:
     # Enable persistent volume for storing dags
     enabled: true
     # Volume size for dags
-    size: 2Gi
+    size: 1Gi
     # If using a custom storageClass, pass name here
-    storageClassName: rook-ceph-block
+    storageClassName: longhorn
     # access mode of the persistent volume
     accessMode: ReadWriteOnce
     ## the name of an existing PVC to use
-    existingClaim:
+    existingClaim: airflow-dags
     ## optional subpath for dag volume mount
-    subPath: ~
+    subPath: dags/
   gitSync:
     enabled: false
 
@@ -2453,11 +2453,11 @@ logs:
     # Enable persistent volume for storing logs
     enabled: true
     # Volume size for logs
-    size: 10Gi
+    size: 20Gi
     # Annotations for the logs PVC
     annotations: {}
     # If using a custom storageClass, pass name here
-    storageClassName: rook-ceph-block
+    storageClassName: longhorn
     ## the name of an existing PVC to use
-    existingClaim:
+    existingClaim: airflow-logs
 

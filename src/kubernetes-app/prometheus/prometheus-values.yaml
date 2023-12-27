@@ -731,7 +731,7 @@ alertmanager:
     storage:
     volumeClaimTemplate:
       spec:
-        storageClassName: rook-ceph-block
+        storageClassName: longhorn
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
@@ -3538,7 +3538,7 @@ prometheus:
     ##
     volumeClaimTemplate:
       spec:
-        storageClassName: rook-ceph-block
+        storageClassName: longhorn
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
@@ -3568,7 +3568,10 @@ prometheus:
     ## The scrape configuration example below will find master nodes, provided they have the name .*mst.*, relabel the
     ## port to 2379 and allow etcd scraping provided it is running on all Kubernetes master nodes
     ##
-    additionalScrapeConfigs: []
+    additionalScrapeConfigs:
+    - job_name: 'statsd-exporter'
+      static_configs:
+      - targets: ['airflow-statsd.airflow.svc.cluster.local:9102']
     # - job_name: kube-etcd
     #   kubernetes_sd_configs:
     #     - role: node
@@ -4243,7 +4246,7 @@ thanosRuler:
     storage: {}
     volumeClaimTemplate:
       spec:
-        storageClassName: rook-ceph-block
+        storageClassName: longhorn
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:

@@ -1,0 +1,8 @@
+- name: Check Node Dependencies
+  hosts: all
+  become: true
+  tasks:
+    - name: Reset Kubernetes component
+      ansible.builtin.command: "kubeadm reset --force"
+      failed_when: false
+      changed_when: true

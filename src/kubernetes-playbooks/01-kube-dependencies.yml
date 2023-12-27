@@ -11,9 +11,6 @@
       ansible.builtin.apt:
         update_cache: true
 
-    - name: Reboot and wait for reboot to complete
-      ansible.builtin.reboot:
-
     - name: Check any existing Swap
       ansible.builtin.command: swapon -s
       register: result
@@ -29,6 +26,39 @@
         path: /etc/fstab
         regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
         replace: '# \1'
+
+    - name: Create /data
+      ansible.builtin.file:
+        path: /data
+        state: directory
+        owner: root
+        group: root
+        mode: '0751'
+
+    - name: Create a new ext4 primary partition
+      community.general.parted:
+        device: /dev/sda
+        number: 1
+        state: present
+        fs_type: ext4
+
+    - name: Create a ext4 filesystem on /dev/sdb1
+      community.general.filesystem:
+        fstype: ext4
+        dev: /dev/sda1
+
+    - name: Fetch the UUID of /dev/sda1
+      command: blkid -s UUID -o value /dev/sda1
+      changed_when: false
+      register: blkid_out
+
+    - name: Mount /dev/sda1 by UUID
+      ansible.posix.mount:
+        path: /data
+        src: UUID={{ blkid_out.stdout }}
+        fstype: ext4
+        opts: defaults
+        state: mounted
 
     - name: Create an empty file for the Containerd module
       ansible.builtin.copy:
@@ -65,8 +95,10 @@
       changed_when: false
 
     - name: Install APT Transport HTTPS
-      ansible.builtin.apt:
-        name: apt-transport-https
+      ansible.builtin.package:
+        name:
+          - apt-transport-https
+          - nfs-common
         state: present
 
     - name: Add Docker apt-key

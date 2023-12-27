@@ -1,11 +1,20 @@
 - name: Helm install airflow
   hosts: localhost
   tasks:
+    - name: Create a k8s namespace
+      kubernetes.core.k8s:
+        name: airflow
+        api_version: v1
+        kind: Namespace
+        state: present
+    - name: Apply PV and PVC for airflow
+      kubernetes.core.k8s:
+        state: present
+        src: airflow-pv.yml
     - name: Add airbyte repository
       kubernetes.core.helm_repository:
         name: apache-airflow
         repo_url: https://airflow.apache.org
-
     - name: Deploy airflow chart using values files on target
       kubernetes.core.helm:
         name: airflow

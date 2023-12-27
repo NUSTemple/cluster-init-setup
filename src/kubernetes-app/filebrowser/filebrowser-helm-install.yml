@@ -1,0 +1,17 @@
+- name: Helm install filebrowser
+  hosts: localhost
+  tasks:
+    - name: Add filebrowser repository
+      kubernetes.core.helm_repository:
+        name: utkuozdemir
+        repo_url: https://utkuozdemir.org/helm-charts
+
+    - name: Deploy filebrowser chart using values files on target
+      kubernetes.core.helm:
+        name: filebrowser
+        chart_ref: utkuozdemir/filebrowser
+        release_namespace: airflow
+        values_files:
+          - filebrowser-values.yml
+        binary_path: /opt/homebrew/bin/helm
+        create_namespace: true

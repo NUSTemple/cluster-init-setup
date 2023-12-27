@@ -29,7 +29,7 @@ elasticsearch:
   # # Request smaller persistent volumes.
   volumeClaimTemplate:
     accessModes: ["ReadWriteOnce"]
-    storageClassName: "rook-ceph-block"
+    storageClassName: "longhorn"
     resources:
       requests:
         storage: 100M
@@ -68,7 +68,7 @@ neo4j:
       mode: "defaultStorageClass"
       # mode: "dynamic"
       # dynamic:
-      #   storageClassName: rook-ceph-block
+      #   storageClassName: longhorn
 
   env:
     NEO4J_PLUGINS: '["apoc"]'

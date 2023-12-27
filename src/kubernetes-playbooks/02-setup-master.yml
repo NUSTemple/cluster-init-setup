@@ -55,10 +55,7 @@
       become: true
       become_user: ansible
       ansible.builtin.shell: |
-        kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml >> pod_network_setup.log
+        kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
       args:
         chdir: $HOME
         creates: pod_network_setup.log
-    
-
-
