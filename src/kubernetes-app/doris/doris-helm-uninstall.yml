@@ -1,0 +1,7 @@
+- name: Helm uninstall doris
+  hosts: localhost
+  tasks:
+    - name: Uninstall Doris Cluster.
+      kubernetes.core.k8s:
+        state: absent
+        src: doriscluster-values.yml
