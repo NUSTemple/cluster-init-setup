@@ -1,0 +1,11 @@
+- name: Setup kuboard
+  hosts: localhost
+  tasks:
+    - name: Deploy kuboard to the cluster.
+      kubernetes.core.k8s:
+        state: present
+        src: kuboard-values.yml
+    - name: Deploy kuboard Ingress to the cluster.
+      kubernetes.core.k8s:
+        state: present
+        src: kuboard-ingress.yml

@@ -18,7 +18,7 @@ global:
   ##   - myRegistryKeySecretName
   ##
   imagePullSecrets: []
-  storageClass: "nfs-csi"
+  storageClass: "longhorn"
 
 ## @section Common parameters
 ##
@@ -1128,7 +1128,7 @@ mariadb:
     ##
     persistence:
       enabled: true
-      storageClass: "nfs-csi"
+      storageClass: "longhorn"
       accessModes:
         - ReadWriteOnce
       size: 8Gi
