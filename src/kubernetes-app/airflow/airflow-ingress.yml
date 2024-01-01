@@ -7,12 +7,18 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/server-snippet: |
+          proxy_set_header Host $host;
+          proxy_redirect off;
+          proxy_http_version 1.1;
+          proxy_set_header Referer $host;
     cert-manager.io/cluster-issuer: "/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=RapidSSL TLS RSA CA G1"
 spec:
   ingressClassName: nginx
   tls:
   - hosts:
     - "*.learn-data.dev"
+    - "learn-data.dev"
     secretName: ingress-cert
   rules:
   - host: airflow.learn-data.dev
@@ -35,31 +41,3 @@ spec:
             name: filebrowser
             port: 
               number: 80
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: ingress-redirect
-  namespace: airflow
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: "https://airflow.learn-data.dev"
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-    cert-manager.io/cluster-issuer: "/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=RapidSSL TLS RSA CA G1"
-spec:
-  ingressClassName: nginx
-  tls:
-  - hosts:
-    - "*.learn-data.dev"
-    secretName: ingress-cert
-  rules:
-  - host: home.learn-data.dev
-    http:
-      paths:
-      - path: /airflow
-        pathType: Prefix
-        backend:
-          service:
-            name: airflow-webserver
-            port: 
-              number: 8080

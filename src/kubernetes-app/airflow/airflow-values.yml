@@ -157,25 +157,25 @@ ingress:
     host: ""
 
     # The hostnames or hosts configuration for the web Ingress
-    hosts: []
+    hosts: 
     #   # The hostname for the web Ingress (can be templated)
     # - name: ""
     #   # configs for web Ingress TLS
-    #   tls:
-    #     # Enable TLS termination for the web Ingress
-    #     enabled: false
-    #     # the name of a pre-created Secret containing a TLS private key and certificate
-    #     secretName: ""
+      # tls:
+      #   # Enable TLS termination for the web Ingress
+      #   enabled: true
+      #   # the name of a pre-created Secret containing a TLS private key and certificate
+      #   secretName: "ingress-cert"
 
     # The Ingress Class for the web Ingress (used only with Kubernetes v1.19 and above)
     ingressClassName: ""
 
     # configs for web Ingress TLS (Deprecated - renamed to `ingress.web.hosts[*].tls`)
-    tls:
-      # Enable TLS termination for the web Ingress
-      enabled: false
-      # the name of a pre-created Secret containing a TLS private key and certificate
-      secretName: ""
+    # tls:
+    #   # Enable TLS termination for the web Ingress
+    #   enabled: false
+    #   # the name of a pre-created Secret containing a TLS private key and certificate
+    #   secretName: "ingress-cert"
 
     # HTTP paths to add to the web Ingress before the default path
     precedingPaths: []
@@ -211,7 +211,7 @@ ingress:
     #     secretName: ""
 
     # The Ingress Class for the flower Ingress (used only with Kubernetes v1.19 and above)
-    ingressClassName: ""
+    ingressClassName: "nginx"
 
     # configs for flower Ingress TLS (Deprecated - renamed to `ingress.flower.hosts[*].tls`)
     tls:
@@ -2314,7 +2314,6 @@ config:
   triggerer:
     default_capacity: 1000
 # yamllint enable rule:line-length
-
 # Whether Airflow can launch workers and/or pods in multiple namespaces
 # If true, it creates ClusterRole/ClusterRolebinding (with access to entire cluster)
 multiNamespaceMode: false
