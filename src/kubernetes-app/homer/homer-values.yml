@@ -51,9 +51,9 @@ persistence:
 configmap:
   config:
     # -- Store homer configuration as a ConfigMap
-    enabled: false
+    enabled: true
     # -- Homer configuration. See [image documentation](https://github.com/bastienwirtz/homer/blob/main/docs/configuration.md) for more information.
     # @default -- See values.yaml
     data:
       config.yml: |
-        externalConfig: homer-config.yml
+        externalConfig: https://raw.githubusercontent.com/NUSTemple/cluster-init-setup/master/src/kubernetes-app/homer/homer-config.yml
