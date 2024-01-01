@@ -1,0 +1,33 @@
+- name: Helm install planka
+  hosts: localhost
+  tasks:
+    - name: Create a k8s namespace
+      kubernetes.core.k8s:
+        name: planka
+        api_version: v1
+        kind: Namespace
+        state: present
+
+    - name: Apply PVC for planka
+      kubernetes.core.k8s:
+        state: present
+        src: planka-pvc.yml
+
+    - name: Add planka repository
+      kubernetes.core.helm_repository:
+        name: planka
+        repo_url: http://plankanban.github.io/planka
+
+    - name: Deploy planka chart using values files on target
+      kubernetes.core.helm:
+        name: planka
+        chart_ref: planka/planka
+        release_namespace: planka
+        values_files:
+          - planka-values.yml
+        binary_path: /opt/homebrew/bin/helm
+        create_namespace: true
+    - name: Apply Ingress policy for airbyte to the cluster.
+      kubernetes.core.k8s:
+        state: present
+        src: planka-ingress.yml
