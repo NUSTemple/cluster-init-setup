@@ -6,6 +6,17 @@
         name: djjudas21
         repo_url: https://djjudas21.github.io/charts/
 
+    - name: Uninstall homer chart using values files on target
+      kubernetes.core.helm:
+        name: homer
+        chart_ref: djjudas21/homer
+        release_namespace: homer
+        values_files:
+          - homer-values.yml
+        binary_path: /opt/homebrew/bin/helm
+        create_namespace: true
+        state: absent
+
     - name: Deploy homer chart using values files on target
       kubernetes.core.helm:
         name: homer
