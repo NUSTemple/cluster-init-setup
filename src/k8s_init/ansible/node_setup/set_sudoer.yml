@@ -1,11 +1,28 @@
 ---
-- hosts: all
-  gather_facts: False
-  become: yes
+- name: Setup sudo permission
+  hosts: all
+  gather_facts: false
+  become: true
   become_user: root
   become_method: sudo
   tasks:
-    - lineinfile:
+    - name: Create ansible user
+      ansible.builtin.user:
+        name: ansible
+        password: ff
+        groups:
+          - sudo
+        shell: /bin/bash       # Defaults to /bin/bash
+        system: false             # Defaults to no
+        createhome: true        # Defaults to yes
+        home: /home/ansible  # Defaults to /home/<username>
+    - name: Add authorized_key
+      ansible.posix.authorized_key:
+        user: ansible
+        state: present
+        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+    - name: Setup sudo permission without password
+      ansible.builtin.lineinfile:
         path: /etc/sudoers
         state: present
         regexp: '^%sudo'

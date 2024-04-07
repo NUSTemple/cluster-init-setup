@@ -20,7 +20,7 @@ This repo is to use
    ssh-copy-id pengtan@slave01
    ssh-copy-id pengtan@slave02
    ssh-copy-id pengtan@slave03
-   ssh-copy-id pengtan@slave04
+   ssh-copy-id pengtan@mysql01
    ```
 3. Install ansible in control node (laptop)
    ```bash

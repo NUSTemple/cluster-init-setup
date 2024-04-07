@@ -4,8 +4,8 @@
   tasks:
     - name: Check OS Distribution
       ansible.builtin.fail:
-        msg: "OS should be Ubuntu 22.04, not {{ ansible_distribution }} {{ ansible_distribution_version }}"
-      when: ansible_distribution != 'Ubuntu' or ansible_distribution_version != '22.04'
+        msg: "OS should be Ubuntu 20.04, not {{ ansible_distribution }} {{ ansible_distribution_version }}"
+      when: ansible_distribution != 'Ubuntu' or ansible_distribution_version != '20.04'
 
     - name: Update APT packages
       ansible.builtin.apt:
@@ -42,10 +42,24 @@
         state: present
         fs_type: ext4
 
+    - name: Fetch the UUID of /dev/sda1
+      command: blkid -s UUID -o value /dev/sda1
+      changed_when: false
+      register: blkid_out_before
+
+    - name: Unmount /dev/sda1 by UUID
+      ansible.posix.mount:
+        path: /data
+        src: UUID={{ blkid_out_before.stdout }}
+        fstype: ext4
+        opts: defaults
+        state: unmounted
+
     - name: Create a ext4 filesystem on /dev/sdb1
       community.general.filesystem:
         fstype: ext4
         dev: /dev/sda1
+        force: true
 
     - name: Fetch the UUID of /dev/sda1
       command: blkid -s UUID -o value /dev/sda1
@@ -65,7 +79,7 @@
         content: ""
         dest: /etc/modules-load.d/containerd.conf
         force: false
-        mode: '644'
+        mode: '0644'
 
     - name: Configure modules for Containerd
       ansible.builtin.blockinfile:
@@ -113,14 +127,15 @@
 
     - name: Add Kubernetes apt-key
       ansible.builtin.apt_key:
-        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        url: https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key
+        keyring: /etc/apt/trusted.gpg.d/kubernetes-apt-keyring.gpg
         state: present
 
     - name: Add Kubernetes' APT repository
       ansible.builtin.apt_repository:
-        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+        repo: "deb [signed-by=/etc/apt/trusted.gpg.d/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /"
         state: present
-        filename: "kubernetes"
+        update_cache: true
 
     - name: Install Containerd
       ansible.builtin.apt:
@@ -143,6 +158,12 @@
         path: /etc/containerd/config.toml
         regexp: "            SystemdCgroup = false"
         line: "            SystemdCgroup = true"
+
+    - name: Configuring the systemd cgroup driver for Containerd
+      ansible.builtin.lineinfile:
+        path: /etc/containerd/config.toml
+        regexp: disabled_plugins
+        line: disabled_plugins = [""]
 
     - name: Enable the Containerd service and start it
       ansible.builtin.systemd:
@@ -186,16 +207,16 @@
 
     - name: Check Kubelet args in Kubelet config
       ansible.builtin.shell: |
-        grep "^Environment=\"KUBELET_EXTRA_ARGS=" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf || true
+        grep "^Environment=\"KUBELET_EXTRA_ARGS=" /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf || true
       register: check_args
       changed_when: false
 
     - name: Add runtime args in Kubelet config
       ansible.builtin.lineinfile:
-        dest: "/etc/systemd/system/kubelet.service.d/10-kubeadm.conf"
+        dest: "/usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf"
         line: |
-          'Environment="KUBELET_EXTRA_ARGS= --runtime-cgroups=/system.slice/containerd.service \
-                        --container-runtime-endpoint=unix:///run/containerd/containerd.sock"'
+          Environment="KUBELET_EXTRA_ARGS= --runtime-cgroups=/system.slice/containerd.service \
+                        --container-runtime-endpoint=unix:///run/containerd/containerd.sock"
         insertafter: '\[Service\]'
       when: check_args.stdout == ""
 

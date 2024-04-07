@@ -1,5 +1,6 @@
 ---
-- hosts: all
+- name: Install Node Dependencies
+  hosts: all
   tasks:
     - name: install packages
       become: true
@@ -12,5 +13,4 @@
          - tree
          - vim
          - nano
-         - openjdk-8-jdk
          - neofetch

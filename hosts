@@ -1,11 +1,9 @@
 [master]
 master01 ansible_ssh_host=192.168.50.200 ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
 
-[worker]
+[workers]
 slave01  ansible_ssh_host=192.168.50.201 ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
 slave02  ansible_ssh_host=192.168.50.202 ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
 slave03  ansible_ssh_host=192.168.50.203 ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
-
-[nfs]
 mysql01  ansible_ssh_host=192.168.50.204 ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
 

@@ -2,6 +2,11 @@
   hosts: master
   become: true
   tasks:
+    - name: Reset Kubernetes component
+      ansible.builtin.command: "kubeadm reset --force"
+      failed_when: false
+      changed_when: true
+
     - name: Create an empty file for Kubeadm configuring
       ansible.builtin.copy:
         content: ""
@@ -39,7 +44,7 @@
     - name: Create .kube directory
       become: true
       ansible.builtin.file:
-        path: $HOME/.kube
+        path: /home/ansible/.kube
         state: directory
         mode: "0755"
 
@@ -57,5 +62,5 @@
       ansible.builtin.shell: |
         kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
       args:
-        chdir: $HOME
+        chdir: /home/ansible
         creates: pod_network_setup.log
