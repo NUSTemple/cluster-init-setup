@@ -70,7 +70,7 @@ services:
     icon: "fas terminal"
     items:
       - name: "VSCode"
-        logo: "https://raw.githubusercontent.com/NUSTemple/cluster-init-setup/master/src/kubernetes-app/coder-server/coder-server-logo.png"
+        logo: "https://github.com/NUSTemple/cluster-init-setup/blob/master/src/kubernetes-app/code-server/code-server-logo.png"
         subtitle: "Code Server"
         tag: "app"
         keywords: "self hosted code server"
