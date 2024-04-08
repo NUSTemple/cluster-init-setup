@@ -122,10 +122,10 @@ persistence:
   ##
   storageClass: "longhorn"
   accessMode: ReadWriteOnce
-  size: 10Gi
+  size: 20Gi
   annotations: {}
-  # existingClaim: ""
-  # hostPath: /data
+  existingClaim: "code-server-data"
+  # hostPath: /home/coder/projects
 
 lifecycle:
   enabled: false
@@ -157,23 +157,22 @@ extraContainers: |
 #    value: "overlay2"
 
 extraInitContainers: |
-# - name: customization
-#   image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-#   imagePullPolicy: IfNotPresent
-#   env:
-#     - name: SERVICE_URL
-#       value: https://open-vsx.org/vscode/gallery
-#     - name: ITEM_URL
-#       value: https://open-vsx.org/vscode/item
-#   command:
-#     - sh
-#     - -c
-#     - |
-#       code-server --install-extension ms-python.python
-#       code-server --install-extension golang.Go
-#   volumeMounts:
-#     - name: data
-#       mountPath: /home/coder
+  - name: customization
+    image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+    imagePullPolicy: IfNotPresent
+    env:
+      - name: PASSWORD
+        value: vscode
+      - name: DEFAULT_WORKSPACE
+        value: /home/coder/projects
+    command:
+      - sh
+      - -c
+      - |
+        code-server --install-extension ms-python.python
+    volumeMounts:
+      - name: data
+        mountPath: /home/coder
 
 ## Additional code-server secret mounts
 extraSecretMounts: []
