@@ -67,7 +67,7 @@ links:
 # Leave only a "items" key if not using group (group name, icon & tagstyle are optional, section separation will not be displayed).
 services:
   - name: "Code Development"
-    icon: "fas terminal"
+    icon: "fas fa-terminal"
     items:
       - name: "VSCode"
         logo: "https://external-preview.redd.it/WSuAcyz1u8MoF8cokXspkmOIn8oWXaE8JH-SGXbUUW0.png"
