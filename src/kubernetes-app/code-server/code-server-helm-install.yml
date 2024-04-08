@@ -1,0 +1,41 @@
+- name: Helm install homer
+  hosts: localhost
+  vars:
+    app_namespace: code-server
+    app_name: code-server
+  tasks:
+    - name: Add helm repository for {{ app_name }}
+      ansible.builtin.git:
+        repo: "https://github.com/coder/code-server.git"
+        dest: "/tmp/{{ app_name }}"
+
+    - name: Deploy chart from local path for {{ app_name }}
+      kubernetes.core.helm:
+        name: "{{ app_name }}"
+        chart_ref: "/tmp/{{ app_name }}/ci/helm-chart"
+        release_namespace: "{{ app_namespace }}"
+        values_files:
+          - "{{ app_name }}-values.yml"
+        binary_path: /opt/homebrew/bin/helm
+        create_namespace: true
+
+    - name: Create tls secret to the cluster for {{ app_name }}
+      kubernetes.core.k8s:
+        state: present
+        force: true
+        definition:
+          apiVersion: v1
+          data:
+            tls.crt: "{{ lookup('template', '/Users/pengtan/Downloads/learn-data.dev-ssl/star_learn-data_dev.pem') | b64encode }}"
+            tls.key: "{{ lookup('template', '/Users/pengtan/Downloads/learn-data.dev-ssl/star_learn-data_dev.key') | b64encode }}"
+          kind: Secret
+          metadata:
+            name: ingress-cert
+            namespace: "{{ app_namespace }}"
+          type: kubernetes.io/tls
+
+
+    - name: Apply Ingress policy for homer to the cluster.
+      kubernetes.core.k8s:
+        state: present
+        src: "{{ app_name }}-ingress.yml"

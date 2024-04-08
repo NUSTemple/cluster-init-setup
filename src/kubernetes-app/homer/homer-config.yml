@@ -66,6 +66,16 @@ links:
 # First level array represent a group.
 # Leave only a "items" key if not using group (group name, icon & tagstyle are optional, section separation will not be displayed).
 services:
+  - name: "Code Development"
+    icon: "fas terminal"
+    items:
+      - name: "VSCode"
+        logo: "hhttps://raw.githubusercontent.com/NUSTemple/cluster-init-setup/master/src/kubernetes-app/coder-server/coder-server-logo.png"
+        subtitle: "Code Server"
+        tag: "app"
+        keywords: "self hosted code server"
+        url: "https://code.learn-data.dev/"
+        target: "_blank" # optional html a tag target attribute
   - name: "Data Applications"
     icon: "fas fa-cloud"
     items:
@@ -73,7 +83,7 @@ services:
         logo: "https://airflow.apache.org/docs/apache-airflow/2.3.3/_images/pin_large.png"
         subtitle: "Airflow for data workflow"
         tag: "app"
-        keywords: "self hosted reddit"
+        keywords: "self hosted airflow"
         url: "https://airflow.learn-data.dev/"
         target: "_blank" # optional html a tag target attribute
       - name: "Airbyte"
