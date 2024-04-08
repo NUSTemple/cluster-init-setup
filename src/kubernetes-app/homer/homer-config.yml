@@ -100,6 +100,12 @@ services:
         tag: "app"
         url: "https://doris.learn-data.dev/"
         target: "_blank"
+      - name: "Postgres"
+        logo: "https://cdn.icon-icons.com/icons2/2415/PNG/512/postgresql_plain_wordmark_logo_icon_146390.png"
+        subtitle: "Postgres DB"
+        tag: "app"
+        url: "https://pg.learn-data.dev/"
+        target: "_blank"
   - name: "Cluster Monitoring"
     icon: "fa-solid fa-chart-simple"
     items:
