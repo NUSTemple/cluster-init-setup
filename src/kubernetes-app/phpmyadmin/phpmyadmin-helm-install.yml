@@ -1,13 +1,19 @@
-- name: Setup kuboard
+- name: Setup phpmyadmin
   hosts: localhost
   vars:
-    app_name: kuboard
-    app_namespace: kuboard
+    app_namespace: phpmyadmin
+    app_name: phpmyadmin
   tasks:
-    - name: Deploy to the cluster for {{ app_name }}
-      kubernetes.core.k8s:
-        state: present
-        src: "{{ app_name }}-values.yml"
+    - name: Deploy phpmyadmin chart using values files on target
+      kubernetes.core.helm:
+        name: phpmyadmin
+        chart_ref: oci://registry-1.docker.io/bitnamicharts/phpmyadmin
+        release_namespace: phpmyadmin
+        create_namespace: true
+        values_files:
+          - phpmyadmin-values.yml
+        binary_path: /opt/homebrew/bin/helm
+
     - name: Create tls secret to the cluster for {{ app_name }}
       kubernetes.core.k8s:
         state: present
@@ -21,8 +27,8 @@
           metadata:
             name: ingress-cert
             namespace: "{{ app_namespace }}"
-          type: kubernetes.io/tls    
-    
+          type: kubernetes.io/tls
+
     - name: Deploy Ingress to the cluster for {{ app_name }}
       kubernetes.core.k8s:
         state: present

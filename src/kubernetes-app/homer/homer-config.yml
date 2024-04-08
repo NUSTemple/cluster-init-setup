@@ -116,6 +116,12 @@ services:
         tag: "app"
         url: "https://pg.learn-data.dev/"
         target: "_blank"
+      - name: "Mysql"
+        logo: "https://cdn.iconscout.com/icon/free/png-256/free-mysql-21-1174941.png"
+        subtitle: "Mysql DB"
+        tag: "app"
+        url: "https://phpmyadmin.learn-data.dev/"
+        target: "_blank"
   - name: "Cluster Monitoring"
     icon: "fa-solid fa-chart-simple"
     items:

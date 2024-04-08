@@ -1,0 +1,13 @@
+- name: Setup mysql
+  hosts: localhost
+  tasks:
+    - name: Deploy mysql chart using values files on target
+      kubernetes.core.helm:
+        name: mysql
+        chart_ref: oci://registry-1.docker.io/bitnamicharts/mysql
+        release_namespace: mysql
+        create_namespace: true
+        values_files:
+          - mysql-values.yml
+        binary_path: /opt/homebrew/bin/helm
+
