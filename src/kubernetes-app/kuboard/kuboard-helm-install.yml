@@ -1,11 +1,30 @@
 - name: Setup kuboard
   hosts: localhost
+  vars:
+    app_name: kuboard
+    app_namespace: kuboard
   tasks:
-    - name: Deploy kuboard to the cluster.
+    - name: Deploy to the cluster for {{ app_name }}
       kubernetes.core.k8s:
         state: present
-        src: kuboard-values.yml
-    - name: Deploy kuboard Ingress to the cluster.
+        src: "{{ app_name }}-values.yml"
+    
+    - name: Create tls secret to the cluster for {{ app_name }}
       kubernetes.core.k8s:
         state: present
-        src: kuboard-ingress.yml
+        force: true
+        definition:
+          apiVersion: v1
+          data:
+            tls.crt: "{{ lookup('template', '/Users/pengtan/Downloads/learn-data.dev-ssl/star_learn-data_dev.pem') | b64encode }}"
+            tls.key: "{{ lookup('template', '/Users/pengtan/Downloads/learn-data.dev-ssl/star_learn-data_dev.key') | b64encode }}"
+          kind: Secret
+          metadata:
+            name: ingress-cert
+            namespace: "{{ app_namespace }}"
+          type: kubernetes.io/tls    
+    
+    - name: Deploy Ingress to the cluster for {{ app_name }}
+      kubernetes.core.k8s:
+        state: present
+        src: "{{ app_name }}-ingress.yml"
