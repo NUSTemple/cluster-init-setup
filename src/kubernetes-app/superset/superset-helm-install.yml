@@ -1,22 +1,40 @@
 - name: Helm install superset
   hosts: localhost
+  vars:
+    app_namespace: superset
+    app_name: superset
   tasks:
-    - name: Add superset repository
+    - name: Add repository {{ app_name }}
       kubernetes.core.helm_repository:
-        name: superset
+        name: "{{ app_name }}"
         repo_url: https://apache.github.io/superset
 
     - name: Deploy superset chart using values files on target
       kubernetes.core.helm:
-        name: superset
+        name: "{{ app_name }}"
         chart_ref: superset/superset
-        release_namespace: superset
+        release_namespace: "{{ app_namespace }}"
         values_files:
-          - superset-values.yml
+          - "{{ app_name }}-values.yml"
         binary_path: /opt/homebrew/bin/helm
         create_namespace: true
-    
+
+    - name: Apply Ingress policy to the cluster for {{ app_name }}
+      kubernetes.core.k8s:
+        state: present
+        force: true
+        definition:
+          apiVersion: v1
+          data:
+            tls.crt: "{{ lookup('template', '/Users/pengtan/Downloads/learn-data.dev-ssl/star_learn-data_dev.pem') | b64encode }}"
+            tls.key: "{{ lookup('template', '/Users/pengtan/Downloads/learn-data.dev-ssl/star_learn-data_dev.key') | b64encode }}"
+          kind: Secret
+          metadata:
+            name: ingress-cert
+            namespace: "{{ app_namespace }}"
+          type: kubernetes.io/tls
+
     - name: Apply Ingress policy for superset to the cluster.
       kubernetes.core.k8s:
         state: present
-        src: superset-ingress.yml
+        src: "{{ app_name }}-ingress.yml"
