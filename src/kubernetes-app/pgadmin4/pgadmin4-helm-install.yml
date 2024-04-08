@@ -1,42 +1,26 @@
-- name: Helm install airflow
+- name: Setup pgadmin4
   hosts: localhost
   vars:
-    app_namespace: airflow
-    app_name: airflow
+    app_namespace: pgadmin4
+    app_name: pgadmin4
   tasks:
-    - name: Create a k8s namespace
-      kubernetes.core.k8s:
-        name: "{{ app_name }}"
-        api_version: v1
-        kind: Namespace
-        state: present
-    - name: Apply PV and PVC for airflow
-      kubernetes.core.k8s:
-        state: present
-        src: airflow-pv.yml
-    
-    - name: Check Postgres readiness
-    # @TODO
-    
-    
-    - name: Add airflow repository
+    - name: Add repository {{ app_name }}
       kubernetes.core.helm_repository:
-        name: apache-airflow
-        repo_url: https://airflow.apache.org
-    
-    - name: Deploy airflow chart using values files on target
+        name: runix
+        repo_url: https://helm.runix.net
+
+    - name: Deploy chart using values files on target for {{ app_name }}
       kubernetes.core.helm:
         name: "{{ app_name }}"
-        chart_ref: apache-airflow/airflow
-        chart_version: 1.13.1
+        chart_ref: runix/{{ app_name }}
         release_namespace: "{{ app_namespace }}"
         update_repo_cache: true
         values_files:
-          - airflow-values.yml
+          - "{{ app_name }}-values.yml"
         binary_path: /opt/homebrew/bin/helm
         create_namespace: true
 
-    - name: Apply Ingress policy for airflow to the cluster.
+    - name: Apply Ingress policy to the cluster for {{ app_name }}
       kubernetes.core.k8s:
         state: present
         force: true
@@ -51,7 +35,7 @@
             namespace: "{{ app_namespace }}"
           type: kubernetes.io/tls
 
-    - name: Apply Ingress policy for airbyte to the cluster.
+    - name: Apply Ingress policy to the cluster for {{ app_name }}
       kubernetes.core.k8s:
         state: present
-        src: airflow-ingress.yml
+        src: "{{ app_name }}-ingress.yml"

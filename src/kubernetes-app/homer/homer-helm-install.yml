@@ -1,8 +1,8 @@
 - name: Helm install homer
   hosts: localhost
   vars:
-    namespace: homer
-    name: homer
+    app_namespace: homer
+    app_name: homer
   tasks:
     - name: Add homer repository
       kubernetes.core.helm_repository:
@@ -11,16 +11,16 @@
 
     - name: Uninstall homer chart using values files on target
       kubernetes.core.helm:
-        name: "{{ name }}"
+        name: "{{ app_name }}"
         chart_ref: djjudas21/homer
-        release_namespace: "{{ namespace }}"
+        release_namespace: "{{ app_namespace }}"
         binary_path: /opt/homebrew/bin/helm
         create_namespace: true
         state: absent
 
     - name: Deploy homer chart using values files on target
       kubernetes.core.helm:
-        name: "{{ name }}"
+        name: "{{ app_name }}"
         chart_ref: djjudas21/homer
         release_namespace: "{{ namespace }}"
         values_files:
