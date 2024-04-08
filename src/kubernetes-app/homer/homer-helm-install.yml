@@ -1,5 +1,8 @@
 - name: Helm install homer
   hosts: localhost
+  vars:
+    namespace: homer
+    name: homer
   tasks:
     - name: Add homer repository
       kubernetes.core.helm_repository:
@@ -8,18 +11,18 @@
 
     - name: Uninstall homer chart using values files on target
       kubernetes.core.helm:
-        name: homer
+        name: "{{ name }}"
         chart_ref: djjudas21/homer
-        release_namespace: homer
+        release_namespace: "{{ namespace }}"
         binary_path: /opt/homebrew/bin/helm
         create_namespace: true
         state: absent
 
     - name: Deploy homer chart using values files on target
       kubernetes.core.helm:
-        name: homer
+        name: "{{ name }}"
         chart_ref: djjudas21/homer
-        release_namespace: homer
+        release_namespace: "{{ namespace }}"
         values_files:
           - homer-values.yml
         binary_path: /opt/homebrew/bin/helm
@@ -37,7 +40,7 @@
           kind: Secret
           metadata:
             name: ingress-cert
-            namespace: homer
+            namespace: "{{ namespace }}"
           type: kubernetes.io/tls
 
 

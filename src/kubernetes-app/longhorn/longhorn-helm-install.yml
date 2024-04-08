@@ -14,6 +14,22 @@
         values_files:
           - longhorn-values.yml
         binary_path: /opt/homebrew/bin/helm
+
+    - name: Apply Ingress policy for homer to the cluster.
+      kubernetes.core.k8s:
+        state: present
+        force: true
+        definition:
+          apiVersion: v1
+          data:
+            tls.crt: "{{ lookup('template', '/Users/pengtan/Downloads/learn-data.dev-ssl/star_learn-data_dev.pem') | b64encode }}"
+            tls.key: "{{ lookup('template', '/Users/pengtan/Downloads/learn-data.dev-ssl/star_learn-data_dev.key') | b64encode }}"
+          kind: Secret
+          metadata:
+            name: ingress-cert
+            namespace: longhorn-system
+          type: kubernetes.io/tls
+
     - name: Apply Ingress policy for longhorn to the cluster.
       kubernetes.core.k8s:
         state: present
