@@ -70,7 +70,7 @@ services:
     icon: "fa-solid fa-terminal"
     items:
       - name: "VSCode"
-        logo: "https://seeklogo.com/images/V/visual-studio-code-logo-284BC24C39-seeklogo.com.png"
+        logo: "https://i0.wp.com/blog.noblinkyblinky.com/wp-content/uploads/2017/09/vsc-logo.png"
         subtitle: "Code Server"
         tag: "app"
         keywords: "self hosted code server"
