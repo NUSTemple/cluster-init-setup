@@ -1,9 +1,0 @@
-apiVersion: v1
-data:
-  tls.crt: "{{ lookup('template', '/Users/pengtan/Downloads/learn-data.dev-ssl/star_learn-data_dev.pem') }}"
-  tls.key: "{{ lookup('template', '/Users/pengtan/Downloads/learn-data.dev-ssl/star_learn-data_dev.key') }}"
-kind: Secret
-metadata:
-  name: ingress-cert
-  namespace: homer
-type: kubernetes.io/tls
