@@ -1,16 +1,16 @@
-- name: Helm install wordpress
+- name: Helm install drupal
   hosts: localhost
   vars:
-    app_namespace: wordpress
-    app_name: wordpress
+    app_namespace: drupal
+    app_name: drupal
   tasks:
-    - name: Deploy wordpress chart using values files on target
+    - name: Deploy chart using values files on target for "{{ app_name }}"
       kubernetes.core.helm:
-        name: wordpress
-        chart_ref: oci://registry-1.docker.io/bitnamicharts/wordpress
-        release_namespace: wordpress
+        name: "{{ app_name }}"
+        chart_ref: "oci://registry-1.docker.io/bitnamicharts/{{ app_name }}"
+        release_namespace: "{{ app_namespace }}"
         values_files:
-          - wordpress-values.yml
+          - "{{ app_name }}-values.yml"
         binary_path: /opt/homebrew/bin/helm
         create_namespace: true
 

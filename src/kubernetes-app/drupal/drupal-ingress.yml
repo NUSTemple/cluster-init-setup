@@ -2,9 +2,10 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-nginx
-  namespace: wordpress
+  namespace: drupal
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     cert-manager.io/cluster-issuer: "/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=RapidSSL TLS RSA CA G1"
 spec:
   ingressClassName: nginx
@@ -13,14 +14,13 @@ spec:
     - "*.learn-data.dev"
     secretName: ingress-cert
   rules:
-  - host: wordpress.learn-data.dev
+  - host: drupal.learn-data.dev
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: wordpress
+            name: drupal
             port: 
               number: 80
-
