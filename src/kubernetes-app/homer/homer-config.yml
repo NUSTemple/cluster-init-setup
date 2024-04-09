@@ -76,6 +76,13 @@ services:
         keywords: "self hosted code server"
         url: "https://code.learn-data.dev/"
         target: "_blank" # optional html a tag target attribute
+      - name: "Drupal"
+        logo: "https://www.drupal.org/files/Wordmark2_blue_RGB%281%29.png"
+        subtitle: "Blogging"
+        tag: "app"
+        keywords: "Blogging Content Management System"
+        url: "https://drupal.learn-data.dev/"
+        target: "_blank" # optional html a tag target attribute
   - name: "Data Applications"
     icon: "fas fa-cloud"
     items:
