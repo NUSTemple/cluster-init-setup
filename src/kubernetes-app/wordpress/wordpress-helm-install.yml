@@ -1,5 +1,8 @@
 - name: Helm install wordpress
   hosts: localhost
+  vars:
+    app_namespace: wordpress
+    app_name: wordpress
   tasks:
     - name: Deploy wordpress chart using values files on target
       kubernetes.core.helm:
@@ -10,7 +13,23 @@
           - wordpress-values.yml
         binary_path: /opt/homebrew/bin/helm
         create_namespace: true
-    - name: Apply Ingress policy for wordpress to the cluster.
+
+    - name: Create tls secret to the cluster for {{ app_name }}
       kubernetes.core.k8s:
         state: present
-        src: wordpress-ingress.yml
+        force: true
+        definition:
+          apiVersion: v1
+          data:
+            tls.crt: "{{ lookup('template', '/Users/pengtan/Downloads/learn-data.dev-ssl/star_learn-data_dev.pem') | b64encode }}"
+            tls.key: "{{ lookup('template', '/Users/pengtan/Downloads/learn-data.dev-ssl/star_learn-data_dev.key') | b64encode }}"
+          kind: Secret
+          metadata:
+            name: ingress-cert
+            namespace: "{{ app_namespace }}"
+          type: kubernetes.io/tls
+
+    - name: Deploy Ingress to the cluster for {{ app_name }}
+      kubernetes.core.k8s:
+        state: present
+        src: "{{ app_name }}-ingress.yml"

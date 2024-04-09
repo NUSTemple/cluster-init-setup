@@ -1,18 +1,18 @@
-- name: Helm install airbyte
+- name: Helm install kube-prometheus-stack
   hosts: localhost
   vars:
-    app_name: airbyte
-    app_namespace: airbyte
+    app_name: kube-prometheus-stack
+    app_namespace: kube-prometheus-stack
   tasks:
     - name: Add repository {{ app_name }}
       kubernetes.core.helm_repository:
-        name: "{{ app_name }}"
-        repo_url: https://airbytehq.github.io/helm-charts
+        name: prometheus-community
+        repo_url: https://prometheus-community.github.io/helm-charts
 
-    - name: Deploy airbyte chart using values files on target
+    - name: Deploy chart using values files on target for {{ app_name }}
       kubernetes.core.helm:
         name: "{{ app_name }}"
-        chart_ref: airbyte/airbyte
+        chart_ref: "prometheus-community/{{ app_name }}"
         release_namespace: "{{ app_namespace }}"
         values_files:
           - "{{ app_name }}-values.yml"

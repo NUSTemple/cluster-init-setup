@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-nginx
-  namespace: wordpress
+  namespace: kube-prometheus-stack
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
     cert-manager.io/cluster-issuer: "/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=RapidSSL TLS RSA CA G1"
@@ -13,14 +13,13 @@ spec:
     - "*.learn-data.dev"
     secretName: ingress-cert
   rules:
-  - host: wordpress.learn-data.dev
+  - host: grafana.learn-data.dev
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: wordpress
+            name: kube-prometheus-stack-grafana
             port: 
               number: 80
-

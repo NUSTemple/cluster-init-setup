@@ -21,8 +21,7 @@
           metadata:
             name: ingress-cert
             namespace: "{{ app_namespace }}"
-          type: kubernetes.io/tls    
-    
+          type: kubernetes.io/tls
     - name: Deploy Ingress to the cluster for {{ app_name }}
       kubernetes.core.k8s:
         state: present
